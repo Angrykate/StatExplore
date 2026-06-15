@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Diagonalisation — StatExplore</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{--font-sans:'Inter',system-ui,sans-serif;--font-mono:'JetBrains Mono',monospace;--bg:#0D0D14;--bg-card:#13131F;--bg-card-hover:#1A1A2A;--bg-surface:#1E1E30;--border:rgba(255,255,255,0.08);--border-hover:rgba(255,255,255,0.15);--text-primary:#F0F0F8;--text-secondary:#8888AA;--text-muted:#55556A;--algebre:#4F46E5;--algebre-soft:rgba(79,70,229,0.12);--acp:#0891B2;--ica:#059669;--ica-soft:rgba(5,150,105,0.12);--afc:#DB2777;--afc-soft:rgba(219,39,119,0.12);--r-sm:8px;--r-md:12px;--r-lg:16px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-sans);background:var(--bg);color:var(--text-primary);line-height:1.6;font-size:16px}
+a{color:inherit;text-decoration:none}
+h1{font-size:2rem;font-weight:700;line-height:1.2}
+h2{font-size:1.4rem;font-weight:600;margin:2rem 0 1rem}
+h4{font-size:0.95rem;font-weight:600}
+p{color:var(--text-secondary);line-height:1.7}
+.nav{position:sticky;top:0;z-index:100;background:rgba(13,13,20,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:1rem 0}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;max-width:1100px;margin:0 auto;padding:0 2rem}
+.nav-logo{font-size:1.1rem;font-weight:700;letter-spacing:-0.02em}
+.nav-logo span{color:var(--acp)}
+.nav-links{display:flex;gap:1.5rem;list-style:none}
+.nav-links a{font-size:0.875rem;color:var(--text-secondary);transition:color 0.2s}
+.nav-links a:hover,.nav-links a.active{color:var(--text-primary)}
+.nav-links a.active{color:var(--algebre)}
+.container{max-width:1100px;margin:0 auto;padding:0 2rem}
+.with-sidebar{display:grid;grid-template-columns:1fr 260px;gap:3rem;align-items:start;padding:2.5rem 0 5rem}
+.sidebar{position:sticky;top:76px}
+.sidebar-section-label{font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.6rem}
+.sidebar-nav{list-style:none;margin-bottom:1.5rem}
+.sidebar-nav li a{display:block;padding:0.35rem 0.75rem;font-size:0.85rem;color:var(--text-secondary);border-left:2px solid transparent;border-radius:0 4px 4px 0;transition:all 0.15s}
+.sidebar-nav li a:hover{color:var(--text-primary);border-left-color:var(--border-hover)}
+.sidebar-nav li a.active{color:var(--algebre);border-left-color:var(--algebre);background:var(--algebre-soft)}
+.sidebar-tip{background:rgba(8,145,178,0.08);border:1px solid rgba(8,145,178,0.2);border-radius:var(--r-md);padding:0.85rem 1rem;font-size:0.8rem;color:var(--text-secondary)}
+.sidebar-tip strong{color:#22D3EE}
+.breadcrumb{display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;color:var(--text-muted);margin-bottom:1rem}
+.breadcrumb a{color:var(--text-secondary)}
+.module-tag{display:inline-block;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:3px 9px;border-radius:4px;background:var(--algebre-soft);color:var(--algebre);margin-bottom:0.6rem}
+.concept-step{padding:1.25rem 1.5rem;border-radius:var(--r-md);background:var(--bg-card);border:1px solid var(--border);border-left:3px solid var(--algebre);margin-bottom:0.75rem}
+.concept-step-label{font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--algebre);margin-bottom:0.4rem}
+.concept-step p{font-size:0.9rem}
+.formula-box{background:var(--bg-surface);border:1px solid var(--border-hover);border-radius:var(--r-md);padding:1.5rem 2rem;margin:1.5rem 0;text-align:center;overflow-x:auto}
+.formula-legend{font-size:0.8rem;color:var(--text-secondary);margin-top:0.75rem;text-align:left;line-height:1.7}
+.retenir{border-radius:var(--r-md);border:1px solid var(--algebre);background:var(--algebre-soft);padding:1.25rem 1.5rem;margin:2rem 0}
+.retenir h4{color:var(--algebre);font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.75rem}
+.retenir ul{list-style:none;display:flex;flex-direction:column;gap:0.4rem}
+.retenir li{font-size:0.88rem;color:var(--text-secondary);padding-left:1.1rem;position:relative;line-height:1.6}
+.retenir li::before{content:'→';position:absolute;left:0;color:var(--algebre)}
+.quiz{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.5rem;margin:2rem 0}
+.quiz-header{font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:1.25rem}
+.quiz-item{margin-bottom:1.5rem}
+.quiz-item:last-child{margin-bottom:0}
+.quiz-q{font-size:0.92rem;color:var(--text-primary);font-weight:500;margin-bottom:0.6rem;line-height:1.6}
+.quiz-opts{display:flex;flex-direction:column;gap:0.4rem}
+.quiz-opt{padding:0.55rem 1rem;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--bg-surface);color:var(--text-secondary);font-size:0.85rem;cursor:pointer;transition:all 0.15s;text-align:left;font-family:var(--font-sans)}
+.quiz-opt:hover{border-color:var(--border-hover);color:var(--text-primary)}
+.quiz-opt.correct{border-color:var(--ica);background:var(--ica-soft);color:#6EE7B7}
+.quiz-opt.wrong{border-color:var(--afc);background:var(--afc-soft);color:#FDA4AF}
+.quiz-opt:disabled{cursor:default}
+.quiz-fb{margin-top:0.6rem;font-size:0.83rem;padding:0.65rem 1rem;border-radius:var(--r-sm);display:none;line-height:1.6}
+.quiz-fb.show{display:block}
+.quiz-fb.correct{background:rgba(5,150,105,0.1);color:#6EE7B7;border:1px solid rgba(5,150,105,0.3)}
+.quiz-fb.wrong{background:rgba(219,39,119,0.1);color:#FDA4AF;border:1px solid rgba(219,39,119,0.3)}
+.quiz-divider{height:1px;background:var(--border);margin:1.25rem 0}
+.bottom-nav{display:flex;justify-content:space-between;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+.btn-ghost{display:inline-flex;align-items:center;gap:6px;padding:0.6rem 1.1rem;color:var(--text-secondary);border:1px solid var(--border);border-radius:var(--r-md);font-size:0.875rem;transition:all 0.2s;font-family:var(--font-sans);cursor:pointer;background:transparent}
+.btn-ghost:hover{border-color:var(--border-hover);color:var(--text-primary)}
+.btn-primary{display:inline-flex;align-items:center;gap:6px;padding:0.6rem 1.25rem;background:var(--acp);color:#fff;border-radius:var(--r-md);font-weight:600;font-size:0.875rem;transition:opacity 0.2s;border:none;cursor:pointer;font-family:var(--font-sans)}
+.btn-primary:hover{opacity:0.88}
+.footer{border-top:1px solid var(--border);padding:1.75rem 0;text-align:center;color:var(--text-muted);font-size:0.78rem}
+.method-steps{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden;margin:1.5rem 0}
+.method-step{display:flex;align-items:flex-start;gap:1rem;padding:1.1rem 1.25rem;border-bottom:1px solid var(--border)}
+.method-step:last-child{border-bottom:none}
+.step-num{width:28px;height:28px;min-width:28px;border-radius:50%;background:var(--algebre-soft);color:var(--algebre);font-size:0.8rem;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.method-step h4{margin-bottom:0.25rem}
+.method-step p{font-size:0.875rem}
+.example-step{padding:1rem 1.25rem;background:var(--bg-card);border:1px solid var(--border);border-left:2px solid var(--algebre);border-radius:var(--r-md);margin-bottom:0.6rem}
+.example-step .label{font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--algebre);margin-bottom:0.3rem}
+.example-step p{font-size:0.875rem}
+.decomp-visual{display:flex;align-items:center;justify-content:center;gap:0.5rem;flex-wrap:wrap;padding:1.5rem;background:var(--bg-surface);border-radius:var(--r-md);margin:1.5rem 0;border:1px solid var(--border)}
+.decomp-mat{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-sm);padding:0.6rem 0.9rem;text-align:center;font-family:var(--font-mono);font-size:0.82rem}
+.decomp-mat .mat-label{font-size:0.65rem;color:var(--text-muted);margin-bottom:0.3rem;letter-spacing:0.06em;text-transform:uppercase}
+.decomp-sym{color:var(--text-muted);font-size:1.3rem;font-weight:300}
+.highlight-p{border-color:var(--algebre);color:var(--algebre)}
+.highlight-d{border-color:#22D3EE;color:#22D3EE}
+.highlight-pi{border-color:#818CF8;color:#818CF8}
+@media(max-width:768px){.with-sidebar{grid-template-columns:1fr}.sidebar{display:none}.nav-links{display:none}.container{padding:0 1.25rem}.decomp-visual{flex-direction:column}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">Stat<span>Explore</span></div>
+    <ul class="nav-links">
+      <li><a href="../index.html">Accueil</a></li>
+      <li><a href="index.html" class="active">Algèbre</a></li>
+      <li><a href="../acp/index.html">ACP</a></li>
+    </ul>
+  </div>
+</nav>
+<div class="container">
+  <div class="with-sidebar">
+    <article>
+      <div class="breadcrumb"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Algèbre Linéaire</a><span>›</span><span>Diagonalisation</span></div>
+      <div class="module-tag">Module 1 — Algèbre</div>
+      <h1 style="margin:0.5rem 0 0.4rem">Diagonalisation</h1>
+      <p style="font-size:1rem;margin-bottom:2.5rem">Décomposer une matrice en \(A = PDP^{-1}\) — le pont entre valeurs propres, changement de base et ACP.</p>
+
+      <h2>1. Pourquoi diagonaliser ?</h2>
+      <div class="concept-step">
+        <div class="concept-step-label">L'idée fondamentale</div>
+        <p>Une matrice diagonale est la forme la plus simple d'une transformation — chaque axe est simplement étiré. Diagonaliser \(A\), c'est trouver une base (celle des vecteurs propres) dans laquelle \(A\) agit comme une matrice diagonale. C'est exactement ce que fait l'ACP.</p>
+      </div>
+
+      <h2>2. La décomposition \(A = PDP^{-1}\)</h2>
+      <div class="decomp-visual">
+        <div class="decomp-mat highlight-p">
+          <div class="mat-label">P</div>
+          <div style="color:var(--algebre)">Matrice de passage<br><small style="color:var(--text-muted);font-size:0.7rem">colonnes = vecteurs propres</small></div>
+        </div>
+        <div class="decomp-sym">×</div>
+        <div class="decomp-mat highlight-d">
+          <div class="mat-label">D</div>
+          <div style="color:#22D3EE">\(\begin{pmatrix}\lambda_1 & 0 \\ 0 & \lambda_2\end{pmatrix}\)<br><small style="color:var(--text-muted);font-size:0.7rem">valeurs propres en diagonal</small></div>
+        </div>
+        <div class="decomp-sym">×</div>
+        <div class="decomp-mat highlight-pi">
+          <div class="mat-label">P⁻¹</div>
+          <div style="color:#818CF8">Inverse de P<br><small style="color:var(--text-muted);font-size:0.7rem">= Pᵀ si base orthonormée</small></div>
+        </div>
+      </div>
+
+      <div class="formula-box">
+        \[ A = P \cdot D \cdot P^{-1} \]
+        <div class="formula-legend">
+          <code>P</code> : matrice dont les colonnes sont les vecteurs propres &nbsp;·&nbsp;
+          <code>D</code> : matrice diagonale avec les valeurs propres &nbsp;·&nbsp;
+          Pour les matrices symétriques (\(A = A^T\)) : \(P^{-1} = P^T\), donc \(A = P D P^T\)
+        </div>
+      </div>
+
+      <h2>3. Méthode complète</h2>
+      <div class="method-steps">
+        <div class="method-step">
+          <div class="step-num">1</div>
+          <div><h4>Calculer les valeurs propres</h4><p>Résoudre \(\det(A - \lambda I) = 0\). Les racines \(\lambda_1, \lambda_2, \dots\) sont les valeurs propres.</p></div>
+        </div>
+        <div class="method-step">
+          <div class="step-num">2</div>
+          <div><h4>Calculer les vecteurs propres</h4><p>Pour chaque \(\lambda_k\), résoudre \((A - \lambda_k I)\mathbf{v} = \mathbf{0}\). Normaliser si besoin.</p></div>
+        </div>
+        <div class="method-step">
+          <div class="step-num">3</div>
+          <div><h4>Construire P et D</h4><p>\(P\) = matrice dont les colonnes sont les vecteurs propres. \(D\) = matrice diagonale avec les valeurs propres correspondantes (même ordre que les colonnes de \(P\)).</p></div>
+        </div>
+        <div class="method-step">
+          <div class="step-num">4</div>
+          <div><h4>Vérifier</h4><p>Calculer \(PDP^{-1}\) et vérifier qu'on retrouve \(A\). Ou vérifier \(AP = PD\) (plus rapide).</p></div>
+        </div>
+      </div>
+
+      <h2>4. Exemple numérique complet</h2>
+      <p style="font-size:0.875rem;margin-bottom:1rem">Diagonaliser \(A = \begin{pmatrix}4 & 1\\2 & 3\end{pmatrix}\)</p>
+
+      <div class="example-step">
+        <div class="label">Étape 1 — Valeurs propres</div>
+        <p>\(\det(A-\lambda I) = (4-\lambda)(3-\lambda)-2 = \lambda^2-7\lambda+10 = (\lambda-2)(\lambda-5) = 0\)</p>
+        <p style="margin-top:0.3rem">Donc \(\lambda_1 = 2,\ \lambda_2 = 5\)</p>
+      </div>
+
+      <div class="example-step">
+        <div class="label">Étape 2 — Vecteurs propres</div>
+        <p>Pour \(\lambda_1=2\) : \((A-2I)\mathbf{v}=\begin{pmatrix}2&1\\2&1\end{pmatrix}\mathbf{v}=\mathbf{0}\) → \(\mathbf{v_1}=\begin{pmatrix}1\\-2\end{pmatrix}\)</p>
+        <p style="margin-top:0.4rem">Pour \(\lambda_2=5\) : \((A-5I)\mathbf{v}=\begin{pmatrix}-1&1\\2&-2\end{pmatrix}\mathbf{v}=\mathbf{0}\) → \(\mathbf{v_2}=\begin{pmatrix}1\\1\end{pmatrix}\)</p>
+      </div>
+
+      <div class="example-step">
+        <div class="label">Étape 3 — Construire P et D</div>
+        <p>\(P = \begin{pmatrix}1&1\\-2&1\end{pmatrix},\quad D = \begin{pmatrix}2&0\\0&5\end{pmatrix}\)</p>
+      </div>
+
+      <div class="example-step">
+        <div class="label">Étape 4 — Vérification via AP = PD</div>
+        <p>\(AP = \begin{pmatrix}4&1\\2&3\end{pmatrix}\begin{pmatrix}1&1\\-2&1\end{pmatrix} = \begin{pmatrix}2&5\\-4&5\end{pmatrix}\)</p>
+        <p style="margin-top:0.3rem">\(PD = \begin{pmatrix}1&1\\-2&1\end{pmatrix}\begin{pmatrix}2&0\\0&5\end{pmatrix} = \begin{pmatrix}2&5\\-4&5\end{pmatrix}\) ✓</p>
+      </div>
+
+      <h2>5. Théorème spectral (cas ACP)</h2>
+      <div class="concept-step" style="border-left-color:#22D3EE">
+        <div class="concept-step-label" style="color:#22D3EE">Pour les matrices symétriques</div>
+        <p>Toute matrice symétrique réelle (\(A = A^T\)) est diagonalisable dans une base <strong style="color:var(--text-primary)">orthonormée</strong>. Ses vecteurs propres sont orthogonaux deux à deux. On a \(P^{-1} = P^T\), donc :</p>
+      </div>
+      <div class="formula-box">
+        \[ A = P \cdot D \cdot P^T \quad \text{(si } A = A^T \text{)} \]
+        <div class="formula-legend">La matrice de covariance en ACP est symétrique → on peut toujours la diagonaliser avec des vecteurs propres orthonormés. C'est le fondement théorique de l'ACP.</div>
+      </div>
+
+      <div class="retenir">
+        <h4>&#128278; À retenir / À l'examen</h4>
+        <ul>
+          <li>Diagonalisation : \(A = PDP^{-1}\) où colonnes de \(P\) = vecteurs propres, diagonale de \(D\) = valeurs propres</li>
+          <li>Vérification rapide : \(AP = PD\) (évite de calculer \(P^{-1}\))</li>
+          <li>Matrice symétrique : \(P^{-1} = P^T\) → théorème spectral, toujours diagonalisable</li>
+          <li>Application directe en ACP : \(V = P \Lambda P^T\) où \(V\) = matrice de covariance</li>
+          <li>Ordre des colonnes de \(P\) et de \(D\) doit être cohérent (\(\lambda_1\) correspond à \(\mathbf{v_1}\))</li>
+        </ul>
+      </div>
+
+      <div class="quiz">
+        <div class="quiz-header">&#129504; Quiz de validation</div>
+        <div class="quiz-item">
+          <div class="quiz-q">Dans la décomposition \(A = PDP^{-1}\), que contient la diagonale de \(D\) ?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" data-correct="false">Les vecteurs propres de A</button>
+            <button class="quiz-opt" data-correct="true">Les valeurs propres de A</button>
+            <button class="quiz-opt" data-correct="false">Les éléments diagonaux de A</button>
+          </div>
+          <div class="quiz-fb" data-ok="✓ Correct ! D est la matrice diagonale dont les éléments sont les valeurs propres λ₁, λ₂, …" data-ko="D est la matrice DIAGONALE avec les valeurs propres. P contient les vecteurs propres en colonnes."></div>
+        </div>
+        <div class="quiz-divider"></div>
+        <div class="quiz-item">
+          <div class="quiz-q">Pour une matrice de covariance \(\Sigma\) (symétrique), la décomposition spectrale donne :</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" data-correct="false">\(\Sigma = P^T D P\)</button>
+            <button class="quiz-opt" data-correct="true">\(\Sigma = P D P^T\)</button>
+            <button class="quiz-opt" data-correct="false">\(\Sigma = D P P^T\)</button>
+          </div>
+          <div class="quiz-fb" data-ok="✓ Exact ! Σ = PDPᵀ car Σ est symétrique donc P⁻¹ = Pᵀ (base orthonormée de vecteurs propres)." data-ko="Pour une matrice symétrique, P⁻¹ = Pᵀ, donc A = PDP⁻¹ devient Σ = PDPᵀ."></div>
+        </div>
+        <div class="quiz-divider"></div>
+        <div class="quiz-item">
+          <div class="quiz-q">Comment vérifier rapidement que \(A = PDP^{-1}\) sans calculer \(P^{-1}\) ?</div>
+          <div class="quiz-opts">
+            <button class="quiz-opt" data-correct="false">Calculer \(\det(P)\)</button>
+            <button class="quiz-opt" data-correct="true">Vérifier que \(AP = PD\)</button>
+            <button class="quiz-opt" data-correct="false">Vérifier que \(DA = AD\)</button>
+          </div>
+          <div class="quiz-fb" data-ok="✓ Oui ! AP = PD est équivalent à A = PDP⁻¹ et ne requiert pas de calculer P⁻¹." data-ko="AP = PD est la forme équivalente sans inverse. Si AP = PD, alors A = PDP⁻¹."></div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- SECTION SVD -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <hr style="border:none;border-top:1px solid var(--border);margin:2.5rem 0"/>
+
+      <h2 id="svd" style="margin-bottom:1rem">Bonus fondamental — Décomposition en Valeurs Singulières (SVD)</h2>
+
+      <div class="concept-step" style="border-left-color:#22D3EE">
+        <div class="concept-step-label" style="color:#22D3EE">Pourquoi la SVD ?</div>
+        <p>La diagonalisation \(A = PDP^{-1}\) ne fonctionne que pour les matrices <strong style="color:var(--text-primary)">carrées</strong>. Mais en statistiques, les tableaux de données \(X\) sont <strong style="color:var(--text-primary)">rectangulaires</strong> (\(n\) individus × \(p\) variables). La SVD généralise la diagonalisation à toutes les matrices rectangulaires — c'est le <strong style="color:var(--text-primary)">fondement mathématique de toutes les méthodes factorielles</strong> (ACP, AFC, t-SNE…).</p>
+      </div>
+
+      <h3 style="margin:1.5rem 0 0.75rem">La décomposition</h3>
+      <div class="formula-box">
+        \[ X = U \Sigma V^T = \sum_{\alpha=1}^{r} \sigma_\alpha \, u_\alpha v_\alpha^T \]
+        <div class="formula-legend">
+          <code>X</code> : matrice \(n \times p\) (données) &nbsp;·&nbsp;
+          <code>U</code> : matrice \(n \times n\) orthogonale — colonnes = vecteurs singuliers gauches &nbsp;·&nbsp;
+          <code>Σ</code> : matrice \(n \times p\) diagonale — valeurs singulières \(\sigma_1 \geq \sigma_2 \geq \cdots \geq 0\) &nbsp;·&nbsp;
+          <code>V</code> : matrice \(p \times p\) orthogonale — colonnes = vecteurs singuliers droits &nbsp;·&nbsp;
+          <code>r</code> : rang de \(X\)
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.5rem 0">
+        <div class="concept-step" style="margin-bottom:0;border-left-color:#22D3EE">
+          <div class="concept-step-label" style="color:#22D3EE">Vecteurs singuliers droits V</div>
+          <p style="font-size:0.875rem">Ce sont les <strong style="color:var(--text-primary)">vecteurs propres de \(X^TX\)</strong>.<br>
+          \(X^TX \, v_\alpha = \sigma_\alpha^2 \, v_\alpha\)<br>
+          En ACP : ce sont les <strong style="color:var(--text-primary)">axes principaux</strong> dans l'espace des variables \(\mathbb{R}^p\).</p>
+        </div>
+        <div class="concept-step" style="margin-bottom:0;border-left-color:#818CF8">
+          <div class="concept-step-label" style="color:#818CF8">Vecteurs singuliers gauches U</div>
+          <p style="font-size:0.875rem">Ce sont les <strong style="color:var(--text-primary)">vecteurs propres de \(XX^T\)</strong>.<br>
+          \(XX^T \, u_\alpha = \sigma_\alpha^2 \, u_\alpha\)<br>
+          En ACP : coordonnées des individus dans \(\mathbb{R}^n\).</p>
+        </div>
+      </div>
+
+      <h3 style="margin:1.5rem 0 0.75rem">Lien avec les valeurs propres de l'ACP</h3>
+      <div class="concept-step" style="border-left-color:var(--acp)">
+        <div class="concept-step-label" style="color:var(--acp)">Relation fondamentale</div>
+        <p style="font-size:0.875rem">Les valeurs singulières \(\sigma_\alpha\) et les valeurs propres \(\lambda_\alpha\) de la matrice de covariance \(C = X^TX\) sont liées par :</p>
+      </div>
+      <div class="formula-box" style="margin:0.75rem 0 1.25rem">
+        \[ \lambda_\alpha = \sigma_\alpha^2 \]
+        <div class="formula-legend">
+          Valeurs propres de \(X^TX\) = carrés des valeurs singulières de \(X\). &nbsp;·&nbsp;
+          Les deux matrices \(X^TX\) (taille \(p \times p\)) et \(XX^T\) (taille \(n \times n\)) partagent les mêmes valeurs propres non nulles.
+        </div>
+      </div>
+
+      <h3 style="margin:1.5rem 0 0.75rem">Reconstitution approchée — compression de données</h3>
+      <div class="concept-step" style="border-left-color:var(--acp)">
+        <div class="concept-step-label" style="color:var(--acp)">L'idée clé</div>
+        <p style="font-size:0.875rem">Si on ne garde que les \(q\) premières valeurs singulières (les plus grandes), on obtient la meilleure approximation de rang \(q\) de \(X\) au sens des moindres carrés :</p>
+      </div>
+      <div class="formula-box" style="margin:0.75rem 0 1.25rem">
+        \[ X \approx X^* = \sum_{\alpha=1}^{q} \sigma_\alpha \, u_\alpha v_\alpha^T \qquad (q \ll p) \]
+        <div class="formula-legend">
+          Taux d'inertie capturé par les \(q\) premiers axes :
+          \(\tau_q = \dfrac{\sum_{\alpha=1}^{q} \lambda_\alpha}{\sum_{\alpha=1}^{p} \lambda_\alpha} = \dfrac{\sum_{\alpha=1}^{q} \sigma_\alpha^2}{\sum_{\alpha=1}^{p} \sigma_\alpha^2}\)
+        </div>
+      </div>
+
+      <!-- VIZ SVD -->
+      <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.5rem;margin:1.5rem 0">
+        <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:1rem">▶ SVD — Reconstruction progressive d'une matrice</div>
+        <p style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:1rem">Choisis le nombre de composantes \(q\) conservées. Observe comment la matrice \(X\) (5×4) se reconstitue à partir de ses valeurs singulières.</p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5rem;align-items:start">
+          <div>
+            <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:0.5rem">Matrice originale X</p>
+            <div id="svd-orig" style="display:grid;grid-template-columns:repeat(4,1fr);gap:2px"></div>
+          </div>
+          <div>
+            <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:0.5rem">Reconstruction X* (q composantes)</p>
+            <div id="svd-recon" style="display:grid;grid-template-columns:repeat(4,1fr);gap:2px"></div>
+            <div style="margin-top:0.75rem">
+              <label style="font-size:0.8rem;color:var(--text-secondary)">q = </label>
+              <input type="range" id="svd-q" min="1" max="4" value="1" style="width:80%;accent-color:var(--acp)"/>
+              <span id="svd-q-v" style="font-size:0.8rem;font-family:var(--font-mono);color:var(--text-primary)">1</span>
+            </div>
+          </div>
+          <div>
+            <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:0.5rem">Valeurs singulières σ</p>
+            <div id="svd-bars"></div>
+            <div style="margin-top:0.75rem;font-size:0.82rem;color:var(--text-secondary)">
+              Taux d'inertie τ<sub>q</sub> = <span id="svd-tau" style="color:var(--acp);font-weight:700;font-family:var(--font-mono)">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="retenir" style="margin-top:1.5rem">
+        <h4>📌 SVD — À retenir / À l'examen</h4>
+        <ul>
+          <li>SVD : \(X = U\Sigma V^T\) — généralise la diagonalisation aux matrices rectangulaires</li>
+          <li>Valeurs propres de \(X^TX\) = \(\sigma_\alpha^2\) (carrés des valeurs singulières)</li>
+          <li>Vecteurs singuliers droits \(V\) = vecteurs propres de \(X^TX\) = axes principaux en ACP</li>
+          <li>Reconstitution approchée : garder les \(q\) premières composantes capture \(\tau_q\) de l'inertie</li>
+          <li>C'est le fondement de l'ACP, l'AFC, et de nombreuses méthodes de réduction de dimension</li>
+        </ul>
+      </div>
+
+      <div class="bottom-nav">
+        <a href="valeurs-vecteurs-propres.html" class="btn-ghost">&#8592; Valeurs propres</a>
+        <a href="../acp/index.html" class="btn-primary">Module ACP &#8594;</a>
+      </div>
+    </article>
+
+    <aside class="sidebar">
+      <div class="sidebar-section-label">Module Algèbre</div>
+      <ul class="sidebar-nav">
+        <li><a href="matrices.html">Matrices & opérations</a></li>
+        <li><a href="applications-lineaires.html">Applications linéaires</a></li>
+        <li><a href="changement-de-base.html">Changement de base</a></li>
+        <li><a href="valeurs-vecteurs-propres.html">Valeurs & vecteurs propres</a></li>
+        <li><a href="diagonalisation.html" class="active">Diagonalisation</a></li>
+      </ul>
+      <div class="sidebar-section-label">Vers l'ACP</div>
+      <div class="sidebar-tip">
+        La diagonalisation de la matrice de covariance <strong>\(\Sigma = P\Lambda P^T\)</strong> est exactement l'ACP. Les colonnes de \(P\) = axes principaux, les \(\lambda_i\) = variance expliquée.
+      </div>
+    </aside>
+  </div>
+</div>
+<footer class="footer">StatExplore · MTH1620 · École Polytechnique de Lomé · Licence IA & Big Data</footer>
+<script>
+document.querySelectorAll('.quiz-opt').forEach(opt=>{
+  opt.addEventListener('click',()=>{
+    const item=opt.closest('.quiz-item');
+    if(item.dataset.answered)return;
+    item.dataset.answered='1';
+    const ok=opt.dataset.correct==='true';
+    opt.classList.add(ok?'correct':'wrong');
+    if(!ok)item.querySelector('[data-correct="true"]').classList.add('correct');
+    item.querySelectorAll('.quiz-opt').forEach(o=>o.disabled=true);
+    const fb=item.querySelector('.quiz-fb');
+    fb.textContent=ok?fb.dataset.ok:fb.dataset.ko;
+    fb.classList.add('show',ok?'correct':'wrong');
+  });
+});
+
+/* ─── SVD VISUALISATION ─── */
+(function(){
+  // Matrice X (5x4) exemple
+  const X = [
+    [4, 0, 0, 0],
+    [3, 3, 0, 0],
+    [0, 5, 2, 0],
+    [0, 0, 4, 4],
+    [0, 0, 1, 5]
+  ];
+  const rows=X.length, cols=X[0].length;
+
+  // SVD simplifié par puissance itérée pour matrices petites
+  function matMul(A,B){
+    const r=A.length,c=B[0].length,k=B.length;
+    return Array.from({length:r},(_,i)=>Array.from({length:c},(_,j)=>
+      Array.from({length:k},(_,l)=>A[i][l]*B[l][j]).reduce((a,b)=>a+b,0)));
+  }
+  function transpose(A){return A[0].map((_,j)=>A.map(r=>r[j]));}
+  function norm(v){return Math.sqrt(v.reduce((s,x)=>s+x*x,0));}
+  function normalize(v){const n=norm(v);return n<1e-10?v:v.map(x=>x/n);}
+
+  function powerIteration(M, iters=200){
+    // M is square, find largest eigenvector
+    let v=Array.from({length:M.length},(_,i)=>i===0?1:0);
+    for(let i=0;i<iters;i++){
+      const mv=M.map(row=>row.reduce((s,x,j)=>s+x*v[j],0));
+      v=normalize(mv);
+    }
+    const lam=M.map(row=>row.reduce((s,x,j)=>s+x*v[j],0)).reduce((s,x,i)=>s+x*v[i],0);
+    return {vec:v, val:lam};
+  }
+
+  function deflate(M, vec, val){
+    const n=M.length;
+    return M.map((row,i)=>row.map((x,j)=>x - val*vec[i]*vec[j]));
+  }
+
+  function svd(X){
+    const Xt=transpose(X);
+    const XtX=matMul(Xt,X);
+    const XXt=matMul(X,Xt);
+    const rank=Math.min(rows,cols);
+    const Us=[],Ss=[],Vs=[];
+    let XtXcopy=XtX.map(r=>[...r]);
+    let XXtcopy=XXt.map(r=>[...r]);
+    for(let k=0;k<rank;k++){
+      const {vec:v,val:lv}=powerIteration(XtXcopy);
+      const sigma=Math.sqrt(Math.max(0,lv));
+      if(sigma<1e-8) break;
+      // u = Xv/sigma
+      const Xv=X.map(row=>row.reduce((s,x,j)=>s+x*v[j],0));
+      const u=Xv.map(x=>x/sigma);
+      Us.push(u); Ss.push(sigma); Vs.push(v);
+      XtXcopy=deflate(XtXcopy,v,lv);
+    }
+    return {U:Us,S:Ss,V:Vs};
+  }
+
+  const {U,S,V}=svd(X);
+
+  function reconstruct(q){
+    const R=Array.from({length:rows},()=>Array(cols).fill(0));
+    for(let k=0;k<q;k++){
+      for(let i=0;i<rows;i++)
+        for(let j=0;j<cols;j++)
+          R[i][j]+=S[k]*U[k][i]*V[k][j];
+    }
+    return R;
+  }
+
+  function cellColor(v,mx){
+    const t=Math.max(0,Math.min(1,Math.abs(v)/mx));
+    const b=Math.round(30+t*(229-30));
+    const g=Math.round(13+t*(70-13));
+    const r=Math.round(13+t*(79-13));
+    return `rgb(${r},${g},${b})`;
+  }
+
+  function renderMatrix(id,mat,mx){
+    const el=document.getElementById(id);
+    el.innerHTML='';
+    mat.forEach(row=>{
+      row.forEach(val=>{
+        const cell=document.createElement('div');
+        cell.style.cssText=`background:${cellColor(val,mx)};border-radius:3px;height:36px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:0.68rem;color:#fff;font-weight:600`;
+        cell.textContent=val.toFixed(1);
+        el.appendChild(cell);
+      });
+    });
+  }
+
+  function renderBars(){
+    const el=document.getElementById('svd-bars');
+    el.innerHTML='';
+    const mx=S[0]||1;
+    const q=parseInt(document.getElementById('svd-q').value);
+    S.forEach((s,i)=>{
+      const row=document.createElement('div');
+      row.style.cssText='display:flex;align-items:center;gap:6px;margin-bottom:5px';
+      const lbl=document.createElement('span');
+      lbl.style.cssText='font-size:0.7rem;font-family:var(--font-mono);color:var(--text-muted);min-width:24px';
+      lbl.textContent='σ'+(i+1);
+      const bar=document.createElement('div');
+      bar.style.cssText=`height:14px;border-radius:3px;transition:width 0.3s;width:${Math.round(s/mx*80)}px;background:${i<q?'var(--acp)':'rgba(255,255,255,0.1)'}`;
+      const val=document.createElement('span');
+      val.style.cssText='font-size:0.68rem;font-family:var(--font-mono);color:var(--text-secondary)';
+      val.textContent=s.toFixed(2);
+      row.appendChild(lbl);row.appendChild(bar);row.appendChild(val);
+      el.appendChild(row);
+    });
+  }
+
+  const mx=Math.max(...X.flat().map(Math.abs));
+
+  function update(){
+    const q=parseInt(document.getElementById('svd-q').value);
+    document.getElementById('svd-q-v').textContent=q;
+    const R=reconstruct(q);
+    renderMatrix('svd-recon',R,mx);
+    const totalVar=S.reduce((s,v)=>s+v*v,0);
+    const capturedVar=S.slice(0,q).reduce((s,v)=>s+v*v,0);
+    document.getElementById('svd-tau').textContent=(capturedVar/totalVar*100).toFixed(1)+'%';
+    renderBars();
+  }
+
+  renderMatrix('svd-orig',X,mx);
+  document.getElementById('svd-q').addEventListener('input',update);
+  update();
+})();
+</script>
+</body>
+</html>
+

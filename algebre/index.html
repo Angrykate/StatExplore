@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Algèbre Linéaire — StatExplore</title>
+  <link rel="stylesheet" href="../assets/css/global.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+  <style>
+    body { --mod-color: var(--module-algebre); --mod-glow: var(--module-algebre-glow); --mod-soft: var(--module-algebre-soft); }
+    .page-card {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.1rem 1.25rem;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      transition: all 0.2s; cursor: pointer;
+    }
+    .page-card:hover { border-color: var(--module-algebre); background: var(--bg-card-hover); transform: translateX(4px); }
+    .page-card-left { display: flex; align-items: center; gap: 1rem; }
+    .page-num { width: 32px; height: 32px; border-radius: var(--radius-sm); background: var(--module-algebre-soft); color: var(--module-algebre); font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+    .page-card h4 { font-size: 0.95rem; margin-bottom: 0.15rem; }
+    .page-card p { font-size: 0.8rem; }
+    .formula-preview {
+      font-family: var(--font-mono); font-size: 0.75rem;
+      background: var(--bg-surface); padding: 2px 8px; border-radius: 4px;
+      color: var(--module-algebre); white-space: nowrap;
+    }
+    .priority-badge {
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 2px 7px; border-radius: 999px;
+      background: rgba(217,119,6,0.15); color: #FCD34D; border: 1px solid rgba(217,119,6,0.3);
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="../index.html" class="nav-logo">Stat<span style="color: var(--module-acp)">Explore</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html" style="color: var(--module-algebre)">Algèbre</a></li>
+      <li><a href="../acp/index.html">ACP</a></li>
+      <li><a href="../methodes-nonlineaires/index.html">Méthodes NL</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container" style="padding-top: 3rem; padding-bottom: 5rem;">
+
+  <div class="breadcrumb">
+    <a href="../index.html">Accueil</a>
+    <span class="breadcrumb-sep">›</span>
+    <span>Algèbre Linéaire</span>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.75rem; margin-top: 0.5rem;">
+    <div class="module-icon mod-algebre" style="margin-bottom: 0;"><i class="ti ti-math" aria-hidden="true"></i></div>
+    <div>
+      <div class="module-tag mod-algebre" style="background: var(--module-algebre-soft); color: var(--module-algebre);">Module 1</div>
+      <h1 style="font-size: 1.75rem; margin-top: 0.25rem;">Algèbre Linéaire</h1>
+    </div>
+  </div>
+
+  <p style="max-width: 620px; margin-bottom: 2.5rem;">
+    Les fondations mathématiques de tout le cours. Sans maîtrise des matrices, changements de base
+    et valeurs propres, l'ACP et les méthodes suivantes sont incompréhensibles.
+    Ce module est <strong style="color: var(--text-primary);">fortement accentué à l'examen.</strong>
+  </p>
+
+  <div class="retenir-box mod-algebre" style="margin-bottom: 2.5rem;">
+    <h4><i class="ti ti-alert-triangle" aria-hidden="true"></i> Accent particulier des profs</h4>
+    <ul>
+      <li>Écriture matricielle d'une application linéaire</li>
+      <li>Changement de base : formule \([f]_{B'} = P^{-1}[f]_E P\)</li>
+      <li>Calcul de vecteurs propres et valeurs propres à la main</li>
+      <li>Lien entre diagonalisation et décomposition spectrale</li>
+    </ul>
+  </div>
+
+  <h2 style="margin-bottom: 1.25rem;">Pages du module</h2>
+
+  <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+
+    <a href="matrices.html">
+      <div class="page-card">
+        <div class="page-card-left">
+          <div class="page-num">1</div>
+          <div>
+            <h4>Matrices & opérations</h4>
+            <p>Addition, multiplication, transposée, inverse, trace, déterminant</p>
+          </div>
+        </div>
+        <span class="formula-preview">det(AB) = det(A)·det(B)</span>
+      </div>
+    </a>
+
+    <a href="applications-lineaires.html">
+      <div class="page-card">
+        <div class="page-card-left">
+          <div class="page-num">2</div>
+          <div>
+            <h4>Applications linéaires</h4>
+            <p>Représentation matricielle, noyau, image, théorème du rang</p>
+          </div>
+        </div>
+        <span class="formula-preview">dim(Ker) + dim(Im) = n</span>
+      </div>
+    </a>
+
+    <a href="changement-de-base.html">
+      <div class="page-card">
+        <div class="page-card-left">
+          <div class="page-num">3</div>
+          <div>
+            <h4>Changement de base</h4>
+            <p>Matrice de passage, écriture d'un vecteur dans une nouvelle base</p>
+          </div>
+        </div>
+        <span class="formula-preview">[v]_B = P⁻¹[v]_E</span>
+      </div>
+    </a>
+
+    <a href="valeurs-vecteurs-propres.html">
+      <div class="page-card">
+        <div class="page-card-left">
+          <div class="page-num">4</div>
+          <div>
+            <h4>Valeurs & vecteurs propres <span class="priority-badge" style="margin-left: 0.4rem;">Prioritaire</span></h4>
+            <p>Polynôme caractéristique, calcul des vecteurs propres, interprétation géométrique</p>
+          </div>
+        </div>
+        <span class="formula-preview">det(A − λI) = 0</span>
+      </div>
+    </a>
+
+    <a href="diagonalisation.html">
+      <div class="page-card">
+        <div class="page-card-left">
+          <div class="page-num">5</div>
+          <div>
+            <h4>Diagonalisation</h4>
+            <p>Décomposition \(A = PDP^{-1}\), matrices symétriques, décomposition spectrale</p>
+          </div>
+        </div>
+        <span class="formula-preview">A = P·D·P⁻¹</span>
+      </div>
+    </a>
+
+  </div>
+
+  <div style="margin-top: 3rem; display: flex; justify-content: flex-end;">
+    <a href="../acp/index.html" class="btn-primary">
+      Module suivant : ACP <i class="ti ti-arrow-right"></i>
+    </a>
+  </div>
+
+</div>
+
+<footer class="footer">
+  <p>StatExplore · MTH1620 · École Polytechnique de Lomé</p>
+</footer>
+
+<script src="../assets/js/progress.js"></script>
+</body>
+</html>

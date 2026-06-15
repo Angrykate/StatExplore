@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Inertie, Qualité & Contributions — ACP — StatExplore</title>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{--font-sans:'Inter',system-ui,sans-serif;--font-mono:'JetBrains Mono',monospace;--bg:#0D0D14;--bg-card:#13131F;--bg-surface:#1E1E30;--border:rgba(255,255,255,0.08);--border-hover:rgba(255,255,255,0.15);--text-primary:#F0F0F8;--text-secondary:#8888AA;--text-muted:#55556A;--acp:#0891B2;--acp-soft:rgba(8,145,178,0.12);--ica:#059669;--ica-soft:rgba(5,150,105,0.12);--afc:#DB2777;--afc-soft:rgba(219,39,119,0.12);--r-sm:8px;--r-md:12px;--r-lg:16px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-sans);background:var(--bg);color:var(--text-primary);line-height:1.6;font-size:16px}
+a{color:inherit;text-decoration:none}
+h1{font-size:2rem;font-weight:700}
+h2{font-size:1.4rem;font-weight:600;margin:2.5rem 0 1rem}
+h3{font-size:1.05rem;font-weight:600;margin-bottom:0.5rem}
+p{color:var(--text-secondary);line-height:1.7}
+strong{color:var(--text-primary)}
+.nav{position:sticky;top:0;z-index:100;background:rgba(13,13,20,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:1rem 0}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;max-width:1100px;margin:0 auto;padding:0 2rem}
+.nav-logo{font-size:1.1rem;font-weight:700}.nav-logo span{color:var(--acp)}
+.nav-links{display:flex;gap:1.5rem;list-style:none}
+.nav-links a{font-size:0.875rem;color:var(--text-secondary)}
+.nav-links a.active{color:var(--acp)}
+.container{max-width:1100px;margin:0 auto;padding:0 2rem}
+.with-sidebar{display:grid;grid-template-columns:1fr 260px;gap:3rem;align-items:start;padding:2.5rem 0 5rem}
+.sidebar{position:sticky;top:76px}
+.sidebar-label{font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.6rem}
+.sidebar-nav{list-style:none;margin-bottom:1.5rem}
+.sidebar-nav li a{display:block;padding:0.35rem 0.75rem;font-size:0.85rem;color:var(--text-secondary);border-left:2px solid transparent;border-radius:0 4px 4px 0;transition:all 0.15s}
+.sidebar-nav li a.active{color:var(--acp);border-left-color:var(--acp);background:var(--acp-soft)}
+.sidebar-tip{background:var(--acp-soft);border:1px solid rgba(8,145,178,0.25);border-radius:var(--r-md);padding:0.85rem 1rem;font-size:0.8rem;color:var(--text-secondary)}
+.sidebar-tip strong{color:#22D3EE}
+.breadcrumb{display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;color:var(--text-muted);margin-bottom:1rem}
+.breadcrumb a{color:var(--text-secondary)}
+.module-tag{display:inline-block;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:3px 9px;border-radius:4px;background:var(--acp-soft);color:var(--acp);margin-bottom:0.6rem}
+.concept-step{padding:1.25rem 1.5rem;border-radius:var(--r-md);background:var(--bg-card);border:1px solid var(--border);border-left:3px solid var(--acp);margin-bottom:0.75rem}
+.concept-step-label{font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--acp);margin-bottom:0.4rem}
+.concept-step p{font-size:0.9rem}
+.formula-box{background:var(--bg-surface);border:1px solid var(--border-hover);border-radius:var(--r-md);padding:1.5rem 2rem;margin:1.25rem 0;text-align:center;overflow-x:auto}
+.formula-legend{font-size:0.8rem;color:var(--text-secondary);margin-top:0.75rem;text-align:left;line-height:1.8}
+.formula-legend code{font-family:var(--font-mono);background:var(--bg-card);padding:1px 5px;border-radius:3px;color:var(--text-primary);font-size:0.85em}
+.retenir{border-radius:var(--r-md);border:1px solid var(--acp);background:var(--acp-soft);padding:1.25rem 1.5rem;margin:2rem 0}
+.retenir h4{color:var(--acp);font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.75rem}
+.retenir ul{list-style:none;display:flex;flex-direction:column;gap:0.4rem}
+.retenir li{font-size:0.88rem;color:var(--text-secondary);padding-left:1.1rem;position:relative;line-height:1.6}
+.retenir li::before{content:'→';position:absolute;left:0;color:var(--acp)}
+.quiz{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.5rem;margin:2rem 0}
+.quiz-header{font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:1.25rem}
+.quiz-item{margin-bottom:1.5rem}.quiz-item:last-child{margin-bottom:0}
+.quiz-q{font-size:0.92rem;color:var(--text-primary);font-weight:500;margin-bottom:0.6rem;line-height:1.6}
+.quiz-opts{display:flex;flex-direction:column;gap:0.4rem}
+.quiz-opt{padding:0.55rem 1rem;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--bg-surface);color:var(--text-secondary);font-size:0.85rem;cursor:pointer;transition:all 0.15s;text-align:left;font-family:var(--font-sans)}
+.quiz-opt:hover{border-color:var(--border-hover);color:var(--text-primary)}
+.quiz-opt.correct{border-color:var(--ica);background:var(--ica-soft);color:#6EE7B7}
+.quiz-opt.wrong{border-color:var(--afc);background:var(--afc-soft);color:#FDA4AF}
+.quiz-opt:disabled{cursor:default}
+.quiz-fb{margin-top:0.6rem;font-size:0.83rem;padding:0.65rem 1rem;border-radius:var(--r-sm);display:none;line-height:1.6}
+.quiz-fb.show{display:block}
+.quiz-fb.correct{background:rgba(5,150,105,0.1);color:#6EE7B7;border:1px solid rgba(5,150,105,0.3)}
+.quiz-fb.wrong{background:rgba(219,39,119,0.1);color:#FDA4AF;border:1px solid rgba(219,39,119,0.3)}
+.quiz-divider{height:1px;background:var(--border);margin:1.25rem 0}
+.bottom-nav{display:flex;justify-content:space-between;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+.btn-ghost{display:inline-flex;align-items:center;gap:6px;padding:0.6rem 1.1rem;color:var(--text-secondary);border:1px solid var(--border);border-radius:var(--r-md);font-size:0.875rem;transition:all 0.2s;font-family:var(--font-sans);cursor:pointer;background:transparent}
+.btn-ghost:hover{border-color:var(--border-hover);color:var(--text-primary)}
+.btn-primary{display:inline-flex;align-items:center;gap:6px;padding:0.6rem 1.25rem;background:var(--acp);color:#fff;border-radius:var(--r-md);font-weight:600;font-size:0.875rem;border:none;cursor:pointer;font-family:var(--font-sans)}
+.footer{border-top:1px solid var(--border);padding:1.75rem 0;text-align:center;color:var(--text-muted);font-size:0.78rem}
+.viz{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.5rem;margin:1.5rem 0}
+.viz-title{font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:1rem}
+canvas{display:block;background:#080810;border-radius:var(--r-md)}
+input[type=range]{accent-color:var(--acp);cursor:pointer}
+.metric-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:1.25rem 0}
+.metric-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-md);padding:1.1rem;text-align:center}
+.metric-card .mlabel{font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.35rem}
+.metric-card .mvalue{font-size:1.2rem;font-weight:700;font-family:var(--font-mono)}
+.metric-card .mdesc{font-size:0.75rem;color:var(--text-secondary);margin-top:0.25rem}
+.kaiser-box{background:rgba(8,145,178,0.06);border:1px solid rgba(8,145,178,0.25);border-radius:var(--r-md);padding:1.1rem 1.5rem;margin:1.25rem 0}
+.kaiser-box h3{color:var(--acp);font-size:0.88rem;margin-bottom:0.5rem}
+.data-table{width:100%;border-collapse:collapse;font-size:0.82rem;margin:0.75rem 0}
+.data-table th{background:var(--bg-surface);color:var(--text-secondary);font-weight:600;padding:0.5rem 0.75rem;text-align:center;border:1px solid var(--border)}
+.data-table td{padding:0.5rem 0.75rem;text-align:center;border:1px solid var(--border);font-family:var(--font-mono);font-size:0.8rem;color:var(--text-secondary)}
+.data-table .hl{color:var(--acp);font-weight:600}
+.data-table .hl2{color:#6EE7B7;font-weight:600}
+.data-table .warn{color:#FDA4AF}
+@media(max-width:768px){.with-sidebar{grid-template-columns:1fr}.sidebar{display:none}.metric-cards{grid-template-columns:1fr}.nav-links{display:none}.container{padding:0 1.25rem}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">Stat<span>Explore</span></div>
+    <ul class="nav-links">
+      <li><a href="../index.html">Accueil</a></li>
+      <li><a href="index.html" class="active">ACP</a></li>
+    </ul>
+  </div>
+</nav>
+<div class="container">
+<div class="with-sidebar">
+<article>
+
+<div class="breadcrumb"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">ACP</a><span>›</span><span>Inertie & Qualité</span></div>
+<div class="module-tag">Module 2 — ACP · Page 5/7</div>
+<h1 style="margin:0.5rem 0 0.4rem">Inertie, Qualité de représentation & Contributions</h1>
+<p style="font-size:1rem;margin-bottom:2.5rem">Taux d'inertie, cos², contributions — les trois outils pour évaluer et interpréter la qualité d'une ACP.</p>
+
+<!-- 1. INERTIE ET TAUX -->
+<h2>1. Inertie liée aux axes</h2>
+<div class="concept-step">
+  <div class="concept-step-label">Définition</div>
+  <p>La <strong>valeur propre \(\lambda_\alpha\)</strong> est l'inertie (= variance) du nuage projeté sur l'axe \(\alpha\). Plus elle est grande, plus l'axe "explique" la dispersion des données. Le <strong>taux d'inertie</strong> mesure la part de variance totale capturée par les \(q\) premiers axes :</p>
+</div>
+
+<div class="formula-box">
+  \[ \tau_q = \frac{\sum_{\alpha=1}^{q} \lambda_\alpha}{\sum_{\alpha=1}^{p} \lambda_\alpha} \]
+  <div class="formula-legend">
+    En ACP normée : \(\sum_\alpha \lambda_\alpha = p\) (nombre de variables) &nbsp;·&nbsp;
+    Taux d'inertie de l'axe \(\alpha\) seul : \(\tau_\alpha = \lambda_\alpha / p\)<br>
+    <strong>Règle de lecture :</strong> un bon plan factoriel (2 axes) capte idéalement 60-70% ou plus de l'inertie totale.
+  </div>
+</div>
+
+<!-- 2. COS² -->
+<h2>2. Qualité de représentation — cos²</h2>
+<div class="concept-step">
+  <div class="concept-step-label">Pour les individus</div>
+  <p>La <strong>qualité de représentation</strong> d'un individu \(i\) sur l'axe \(\alpha\) mesure quelle part de son "éloignement" au centre de gravité est capturée par cet axe :</p>
+</div>
+
+<div class="formula-box">
+  \[ \cos^2(i, \alpha) = \frac{\psi_{\alpha i}^2}{\sum_\alpha \psi_{\alpha i}^2} = \frac{\psi_{\alpha i}^2}{d^2(i,G)} \]
+  <div class="formula-legend">
+    <code>ψαi</code> : coordonnée de l'individu i sur l'axe α &nbsp;·&nbsp;
+    <code>d²(i,G)</code> : distance au carré de l'individu i au centre de gravité<br>
+    \(\sum_\alpha \cos^2(i,\alpha) = 1\) pour chaque individu &nbsp;·&nbsp;
+    Plus cos² est proche de 1, mieux l'individu est représenté sur l'axe.
+  </div>
+</div>
+
+<div class="concept-step" style="border-left-color:#818CF8">
+  <div class="concept-step-label" style="color:#818CF8">Pour les variables</div>
+  <p>Pour les variables, cos² sur l'axe \(\alpha\) = carré de la coordonnée \(\varphi_{\alpha j}\) dans le cercle des corrélations (déjà dans \([-1,1]\)) :</p>
+</div>
+<div class="formula-box">
+  \[ \cos^2(j, \alpha) = \varphi_{\alpha j}^2 = \lambda_\alpha \cdot u_{\alpha j}^2 \]
+  <div class="formula-legend">
+    Et \(\sum_\alpha \cos^2(j,\alpha) = \sum_\alpha \varphi_{\alpha j}^2 = 1\) pour chaque variable.<br>
+    <strong>Lecture pratique :</strong> dans le cercle des corrélations, les variables proches du bord ont cos² ≈ 1 sur le plan — elles sont bien représentées.
+  </div>
+</div>
+
+<!-- 3. CONTRIBUTIONS -->
+<h2>3. Contributions des individus aux axes</h2>
+<div class="concept-step">
+  <div class="concept-step-label">Définition</div>
+  <p>La <strong>contribution</strong> de l'individu \(i\) à l'inertie de l'axe \(\alpha\) mesure dans quelle mesure cet individu a "construit" cet axe. Un individu avec une forte contribution est un individu <strong>atypique</strong> qui "tire" l'axe vers lui :</p>
+</div>
+
+<div class="formula-box">
+  \[ \text{CTR}_\alpha(i) = \frac{m_i \cdot \psi_{\alpha i}^2}{\lambda_\alpha} \]
+  <div class="formula-legend">
+    <code>mᵢ</code> : masse de l'individu i (= \(1/n\) si tous égaux) &nbsp;·&nbsp;
+    <code>ψαi</code> : coordonnée sur l'axe α &nbsp;·&nbsp;
+    <code>λα</code> : inertie de l'axe α<br>
+    <strong>Propriété :</strong> \(\sum_{i=1}^n \text{CTR}_\alpha(i) = 1\) pour chaque axe.<br>
+    En pratique avec masses égales : \(\text{CTR}_\alpha(i) = \psi_{\alpha i}^2 / (n\lambda_\alpha)\)
+  </div>
+</div>
+
+<!-- 4. RÈGLES DE CHOIX DU NOMBRE D'AXES -->
+<h2>4. Choisir le nombre d'axes à retenir</h2>
+
+<div class="kaiser-box">
+  <h3>Règle de Kaiser (ACP normée)</h3>
+  <p style="font-size:0.875rem">On retient les axes dont la valeur propre est <strong>supérieure à 1</strong> (= supérieure à l'inertie moyenne = 1 en ACP normée). Un axe avec \(\lambda < 1\) n'apporte pas plus d'information qu'une variable originale seule.</p>
+</div>
+
+<div class="concept-step" style="border-left-color:#22D3EE">
+  <div class="concept-step-label" style="color:#22D3EE">Règle du coude (Scree plot)</div>
+  <p>On trace les valeurs propres en ordre décroissant. On cherche un "<strong>coude</strong>" — une rupture dans la décroissance. Les axes avant le coude sont à retenir.</p>
+</div>
+
+<!-- VIZ — scree plot interactif -->
+<h2>5. Visualisation interactive — Scree plot & qualité</h2>
+<div class="viz">
+  <div class="viz-title">▶ Scree plot et sélection des axes</div>
+  <div style="display:grid;grid-template-columns:auto 1fr;gap:1.5rem;align-items:start">
+    <canvas id="screeCanvas" width="300" height="260"></canvas>
+    <div>
+      <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.75rem">Nombre de variables p :</p>
+      <input type="range" id="p-slider" min="3" max="8" value="5" style="width:100%;accent-color:var(--acp)"/>
+      <div id="eigenvals-display" style="margin-top:1rem;font-size:0.82rem;color:var(--text-secondary)"></div>
+      <div id="kaiser-count" style="margin-top:0.75rem;padding:0.6rem 0.85rem;background:var(--acp-soft);border-radius:var(--r-sm);font-size:0.82rem;color:var(--acp)"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 6. EXEMPLE RÉEL — données du cours -->
+<h2>6. Exemple du cours — 16 variables, 27 individus</h2>
+<p style="font-size:0.875rem;margin-bottom:1rem">Voici les valeurs propres de l'exemple du cours de ton prof (budget-temps, 16 variables actives) :</p>
+
+<table class="data-table">
+  <tr><th>Axe</th><th>λα</th><th>% inertie</th><th>% cumulé</th><th>Kaiser</th></tr>
+  <tr><td>1</td><td class="hl">3.871</td><td>24.20%</td><td>24.20%</td><td class="hl2">✓ λ > 1</td></tr>
+  <tr><td>2</td><td class="hl">3.660</td><td>22.88%</td><td>47.07%</td><td class="hl2">✓ λ > 1</td></tr>
+  <tr><td>3</td><td class="hl">2.006</td><td>12.54%</td><td>59.61%</td><td class="hl2">✓ λ > 1</td></tr>
+  <tr><td>4</td><td class="hl">1.514</td><td>9.47%</td><td>69.08%</td><td class="hl2">✓ λ > 1</td></tr>
+  <tr><td>5</td><td class="hl">1.126</td><td>7.04%</td><td>76.12%</td><td class="hl2">✓ λ > 1</td></tr>
+  <tr><td>6</td><td>0.837</td><td>5.23%</td><td>81.35%</td><td class="warn">✗ λ < 1</td></tr>
+  <tr><td>7</td><td>0.766</td><td>4.79%</td><td>86.15%</td><td class="warn">✗ λ < 1</td></tr>
+  <tr><td>…</td><td>…</td><td>…</td><td>…</td><td>…</td></tr>
+</table>
+<p style="font-size:0.82rem;margin-top:0.5rem">→ Règle de Kaiser : <strong>5 axes</strong> à retenir (λ > 1). Les 2 premiers axes capturent déjà 47% de l'inertie — on observe un "coude" entre les axes 2 et 3.</p>
+
+<div class="retenir">
+  <h4>📌 À retenir / À l'examen</h4>
+  <ul>
+    <li>Taux d'inertie : \(\tau_q = \sum_{k=1}^q \lambda_k / \sum_{k=1}^p \lambda_k\) — mesure la qualité globale</li>
+    <li>Cos² individu : \(\psi_{\alpha i}^2 / d^2(i,G)\) — qualité de représentation de l'individu i sur l'axe α</li>
+    <li>Cos² variable : \(\varphi_{\alpha j}^2 = \lambda_\alpha u_{\alpha j}^2\) — visible directement dans le cercle des corrélations</li>
+    <li>Contribution : \(\text{CTR}_\alpha(i) = \psi_{\alpha i}^2 / (n\lambda_\alpha)\) — qui a "construit" l'axe ? (somme = 1)</li>
+    <li>Règle de Kaiser (ACP normée) : garder les axes avec \(\lambda_\alpha > 1\)</li>
+    <li>Règle du coude : chercher la rupture dans le décroissement des valeurs propres</li>
+    <li>Un individu/variable avec cos² faible est mal représenté — ne pas l'interpréter sur ce plan</li>
+  </ul>
+</div>
+
+<div class="quiz">
+  <div class="quiz-header">🧠 Quiz de validation</div>
+
+  <div class="quiz-item">
+    <div class="quiz-q">En ACP normée avec 8 variables, \(\lambda_1 = 3.2\) et \(\lambda_2 = 2.1\). Quel est le taux d'inertie cumulé des 2 premiers axes ?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">52.5%</button>
+      <button class="quiz-opt" data-correct="true">66.25%</button>
+      <button class="quiz-opt" data-correct="false">40%</button>
+    </div>
+    <div class="quiz-fb" data-ok="✓ Correct ! Σλ = 8 (ACP normée). τ₂ = (3.2 + 2.1)/8 = 5.3/8 = 66.25%." data-ko="Σλ = p = 8. τ₂ = (λ₁+λ₂)/p = (3.2+2.1)/8 = 5.3/8 = 66.25%."></div>
+  </div>
+
+  <div class="quiz-divider"></div>
+
+  <div class="quiz-item">
+    <div class="quiz-q">Un individu a cos²(i, axe 1) = 0.85. Que peut-on dire ?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">Il contribue fortement à la construction de l'axe 1</button>
+      <button class="quiz-opt" data-correct="true">85% de sa distance au centre de gravité est capturée par l'axe 1 — il est bien représenté</button>
+      <button class="quiz-opt" data-correct="false">Sa valeur propre vaut 0.85</button>
+    </div>
+    <div class="quiz-fb" data-ok="✓ Exact ! cos² = 0.85 signifie que 85% de la distance au carré de l'individu au centre est expliquée par l'axe 1. Bonne représentation." data-ko="cos² = 0.85 → 85% de l'éloignement de cet individu au centre est captré par l'axe 1. Il est bien représenté sur cet axe."></div>
+  </div>
+
+  <div class="quiz-divider"></div>
+
+  <div class="quiz-item">
+    <div class="quiz-q">Que signifie une forte contribution CTR d'un individu à un axe ?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">L'individu est bien représenté sur cet axe</button>
+      <button class="quiz-opt" data-correct="true">L'individu est atypique et a fortement influencé la direction de cet axe</button>
+      <button class="quiz-opt" data-correct="false">La valeur propre de cet axe est grande</button>
+    </div>
+    <div class="quiz-fb" data-ok="✓ Correct ! Une forte contribution = l'individu est excentré et a 'tiré' l'axe vers lui. Les individus atypiques contribuent beaucoup." data-ko="CTR mesure l'influence sur la construction de l'axe. Forte CTR = individu atypique qui détermine fortement la direction de l'axe."></div>
+  </div>
+
+  <div class="quiz-divider"></div>
+
+  <div class="quiz-item">
+    <div class="quiz-q">Selon la règle de Kaiser en ACP normée, on retient les axes avec :</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">Un taux d'inertie > 10%</button>
+      <button class="quiz-opt" data-correct="true">Une valeur propre λα > 1</button>
+      <button class="quiz-opt" data-correct="false">Les 2 premiers axes seulement</button>
+    </div>
+    <div class="quiz-fb" data-ok="✓ Oui ! Règle de Kaiser : λα > 1. En ACP normée, l'inertie moyenne par axe = 1. Un axe avec λ < 1 explique moins qu'une variable seule." data-ko="Règle de Kaiser : λα > 1. Car l'inertie moyenne = p/p = 1. Un axe avec λ < 1 apporte moins d'info qu'une variable originale."></div>
+  </div>
+</div>
+
+<div class="bottom-nav">
+  <a href="axes-composantes.html" class="btn-ghost">← Axes & Composantes</a>
+  <a href="individus-variables-supp.html" class="btn-primary">Éléments supplémentaires →</a>
+</div>
+</article>
+
+<aside class="sidebar">
+  <div class="sidebar-label">Module ACP</div>
+  <ul class="sidebar-nav">
+    <li><a href="introduction-principe.html">Introduction & Principe</a></li>
+    <li><a href="espace-individus.html">Espace des individus ℝᵖ</a></li>
+    <li><a href="espace-variables.html">Espace des variables ℝⁿ</a></li>
+    <li><a href="axes-composantes.html">Axes & Composantes</a></li>
+    <li><a href="inertie-qualite.html" class="active">Inertie & Qualité</a></li>
+    <li><a href="individus-variables-supp.html">Éléments supplémentaires</a></li>
+    <li><a href="interpretation-exemple.html">Interprétation & Exemple</a></li>
+  </ul>
+  <div class="sidebar-label">Formules clés</div>
+  <div class="sidebar-tip">
+    <strong>τq = Σλk / p</strong> (taux inertie)<br>
+    <strong>cos²(i,α) = ψ²αi / d²(i,G)</strong><br>
+    <strong>CTR(i) = ψ²αi / (n·λα)</strong>
+  </div>
+</aside>
+</div>
+</div>
+<footer class="footer">StatExplore · MTH1620 · École Polytechnique de Lomé · Licence IA & Big Data</footer>
+<script>
+/* ─── SCREE PLOT ─── */
+(function(){
+  const cvs=document.getElementById('screeCanvas');
+  const ctx=cvs.getContext('2d');
+  const W=cvs.width,H=cvs.height;
+  const pad={l:40,r:20,t:20,b:40};
+
+  function genEigenvals(p){
+    const base=[3.8,2.4,1.6,1.1,0.8,0.6,0.4,0.3];
+    const vals=base.slice(0,p);
+    const s=vals.reduce((a,b)=>a+b,0);
+    return vals.map(v=>v/s*p);
+  }
+
+  function draw(){
+    const p=parseInt(document.getElementById('p-slider').value);
+    const eigs=genEigenvals(p);
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#080810';ctx.fillRect(0,0,W,H);
+
+    const cw=W-pad.l-pad.r, ch=H-pad.t-pad.b;
+    const bw=cw/p*0.6, bx=cw/p;
+    const maxE=Math.max(...eigs)*1.1;
+
+    // Grille
+    ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=1;
+    for(let i=0;i<=4;i++){
+      const y=pad.t+ch*(1-i/4);
+      ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cw,y);ctx.stroke();
+      ctx.fillStyle='rgba(255,255,255,0.3)';ctx.font='10px Inter,sans-serif';
+      ctx.fillText((maxE*i/4).toFixed(1),2,y+3);
+    }
+
+    // Ligne λ=1 (Kaiser)
+    const y1=pad.t+ch*(1-1/maxE);
+    ctx.strokeStyle='rgba(249,115,22,0.5)';ctx.lineWidth=1.5;ctx.setLineDash([5,4]);
+    ctx.beginPath();ctx.moveTo(pad.l,y1);ctx.lineTo(pad.l+cw,y1);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='rgba(249,115,22,0.7)';ctx.font='10px Inter,sans-serif';
+    ctx.fillText('Kaiser λ=1',pad.l+2,y1-4);
+
+    // Barres
+    eigs.forEach((v,i)=>{
+      const x=pad.l+i*bx+(bx-bw)/2;
+      const bh=ch*(v/maxE);
+      const y=pad.t+ch-bh;
+      const keep=v>1;
+      ctx.fillStyle=keep?'var(--acp)':'rgba(255,255,255,0.15)';
+      ctx.beginPath();ctx.roundRect(x,y,bw,bh,3);ctx.fill();
+      ctx.fillStyle=keep?'#22D3EE':'rgba(255,255,255,0.3)';
+      ctx.font='10px Inter,sans-serif';ctx.textAlign='center';
+      ctx.fillText(v.toFixed(2),x+bw/2,y-4);
+      ctx.fillStyle='rgba(255,255,255,0.4)';
+      ctx.fillText('F'+(i+1),x+bw/2,pad.t+ch+14);
+    });
+    ctx.textAlign='left';
+
+    // Ligne de coude
+    ctx.strokeStyle='rgba(129,140,248,0.5)';ctx.lineWidth=1.5;
+    ctx.beginPath();
+    eigs.forEach((v,i)=>{
+      const x=pad.l+i*bx+bx/2;
+      const y=pad.t+ch*(1-v/maxE);
+      if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+
+    const kaiserCount=eigs.filter(v=>v>1).length;
+    let info='<div style="margin-bottom:0.4rem"><strong style="color:var(--acp)">Valeurs propres :</strong></div>';
+    info+=eigs.map((v,i)=>`<div>F${i+1} : ${v.toFixed(3)} ${v>1?'<span style="color:#6EE7B7">✓</span>':'<span style="color:#FDA4AF">✗</span>'}</div>`).join('');
+    document.getElementById('eigenvals-display').innerHTML=info;
+    document.getElementById('kaiser-count').innerHTML=`<strong>Axes retenus (Kaiser) : ${kaiserCount}</strong> / ${p} &nbsp;·&nbsp; Inertie cumulée : ${(eigs.slice(0,kaiserCount).reduce((a,b)=>a+b,0)/p*100).toFixed(1)}%`;
+  }
+
+  document.getElementById('p-slider').addEventListener('input',draw);
+  draw();
+})();
+
+document.querySelectorAll('.quiz-opt').forEach(opt=>{
+  opt.addEventListener('click',()=>{
+    const item=opt.closest('.quiz-item');
+    if(item.dataset.answered)return;
+    item.dataset.answered='1';
+    const ok=opt.dataset.correct==='true';
+    opt.classList.add(ok?'correct':'wrong');
+    if(!ok)item.querySelector('[data-correct="true"]').classList.add('correct');
+    item.querySelectorAll('.quiz-opt').forEach(o=>o.disabled=true);
+    const fb=item.querySelector('.quiz-fb');
+    fb.textContent=ok?fb.dataset.ok:fb.dataset.ko;
+    fb.classList.add('show',ok?'correct':'wrong');
+  });
+});
+</script>
+</body>
+</html>

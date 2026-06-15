@@ -154,6 +154,7 @@
   <div class="nav-inner">
     <div class="nav-logo">Stat<span>Explore</span></div>
     <ul class="nav-links">
+      <li><a href="index.html" class="active">Accueil</a></li>
       <li><a href="algebre/index.html">Algèbre</a></li>
       <li><a href="acp/index.html">ACP</a></li>
       <li><a href="methodes-nonlineaires/index.html">Méthodes NL</a></li>
@@ -161,8 +162,21 @@
       <li><a href="anova/index.html">ANOVA</a></li>
       <li><a href="afc/index.html">AFC</a></li>
     </ul>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
+<div class="mobile-nav" id="mobile-nav">
+  <button class="mobile-nav-close" id="mobile-nav-close">✕</button>
+  <a href="index.html" class="active">Accueil</a>
+  <a href="algebre/index.html">Algèbre</a>
+  <a href="acp/index.html">ACP</a>
+  <a href="methodes-nonlineaires/index.html">Méthodes NL</a>
+  <a href="ica/index.html">ICA</a>
+  <a href="anova/index.html">ANOVA</a>
+  <a href="afc/index.html">AFC</a>
+</div>
 
 <main>
   <!-- HERO -->
@@ -198,7 +212,7 @@
         <span class="stat-label">Modules</span>
       </div>
       <div class="stat-item">
-        <span class="stat-number" style="color: var(--module-acp);">25+</span>
+        <span class="stat-number" style="color: var(--module-acp);">22</span>
         <span class="stat-label">Pages de cours</span>
       </div>
       <div class="stat-item">
@@ -260,9 +274,10 @@
               <li><i class="ti ti-point-filled" aria-hidden="true"></i> Changement de base</li>
               <li><i class="ti ti-point-filled" aria-hidden="true"></i> Valeurs & vecteurs propres</li>
               <li><i class="ti ti-point-filled" aria-hidden="true"></i> Diagonalisation</li>
+              <li><i class="ti ti-point-filled" aria-hidden="true"></i> Produit scalaire & Covariance</li>
             </ul>
             <div class="progress-bar" data-progress-module="algebre"
-              data-progress-pages='["algebre/matrices","algebre/applications","algebre/changement-base","algebre/valeurs-propres","algebre/diagonalisation"]'>
+              data-progress-pages='["algebre/matrices","algebre/applications-lineaires","algebre/changement-de-base","algebre/valeurs-vecteurs-propres","algebre/diagonalisation","algebre/produit-scalaire-covariance"]'>
               <div class="progress-fill" style="width: 0%"></div>
             </div>
           </div>
@@ -283,7 +298,8 @@
               <li><i class="ti ti-point-filled" aria-hidden="true"></i> Qualité & contributions</li>
               <li><i class="ti ti-point-filled" aria-hidden="true"></i> Interprétation complète</li>
             </ul>
-            <div class="progress-bar">
+            <div class="progress-bar" data-progress-module="acp"
+              data-progress-pages='["acp/introduction-principe","acp/espace-individus","acp/espace-variables","acp/axes-composantes","acp/inertie-qualite","acp/individus-variables-supp","acp/interpretation-exemple"]'>
               <div class="progress-fill" style="width: 0%"></div>
             </div>
           </div>
@@ -302,7 +318,8 @@
               <li><i class="ti ti-point-filled" aria-hidden="true"></i> t-SNE</li>
               <li><i class="ti ti-point-filled" aria-hidden="true"></i> UMAP</li>
             </ul>
-            <div class="progress-bar">
+            <div class="progress-bar" data-progress-module="nonlin"
+              data-progress-pages='["nonlin/isomap","nonlin/lle","nonlin/tsne","nonlin/umap"]'>
               <div class="progress-fill" style="width: 0%"></div>
             </div>
           </div>
@@ -319,7 +336,8 @@
               <li><i class="ti ti-point-filled" aria-hidden="true"></i> Principe & modèle de mélange</li>
               <li><i class="ti ti-point-filled" aria-hidden="true"></i> ICA vs ACP</li>
             </ul>
-            <div class="progress-bar">
+            <div class="progress-bar" data-progress-module="ica"
+              data-progress-pages='["ica/index"]'>
               <div class="progress-fill" style="width: 0%"></div>
             </div>
           </div>
@@ -337,7 +355,8 @@
               <li><i class="ti ti-point-filled" aria-hidden="true"></i> Décomposition de la variance</li>
               <li><i class="ti ti-point-filled" aria-hidden="true"></i> Statistique de Fisher</li>
             </ul>
-            <div class="progress-bar">
+            <div class="progress-bar" data-progress-module="anova"
+              data-progress-pages='["anova/index"]'>
               <div class="progress-fill" style="width: 0%"></div>
             </div>
           </div>
@@ -355,7 +374,8 @@
               <li><i class="ti ti-point-filled" aria-hidden="true"></i> Profils lignes & colonnes</li>
               <li><i class="ti ti-point-filled" aria-hidden="true"></i> Inertie & distance du χ²</li>
             </ul>
-            <div class="progress-bar">
+            <div class="progress-bar" data-progress-module="afc"
+              data-progress-pages='["afc/index"]'>
               <div class="progress-fill" style="width: 0%"></div>
             </div>
           </div>

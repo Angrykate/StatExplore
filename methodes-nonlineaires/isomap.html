@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>ISOMAP — StatExplore</title>
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<link rel="stylesheet" href="../assets/css/global.css"/>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 :root{--font-sans:'Inter',system-ui,sans-serif;--font-mono:'JetBrains Mono',monospace;--bg:#0D0D14;--bg-card:#13131F;--bg-surface:#1E1E30;--border:rgba(255,255,255,0.08);--border-hover:rgba(255,255,255,0.15);--text-primary:#F0F0F8;--text-secondary:#8888AA;--text-muted:#55556A;--nonlin:#7C3AED;--nonlin-soft:rgba(124,58,237,0.12);--acp:#0891B2;--acp-soft:rgba(8,145,178,0.12);--ica:#059669;--ica-soft:rgba(5,150,105,0.12);--afc:#DB2777;--afc-soft:rgba(219,39,119,0.12);--r-sm:8px;--r-md:12px;--r-lg:16px}
@@ -85,16 +86,34 @@ input[type=range]{accent-color:var(--nonlin);cursor:pointer}
 @media(max-width:768px){.with-sidebar{grid-template-columns:1fr}.sidebar{display:none}.nav-links{display:none}.container{padding:0 1.25rem}}
 </style>
 </head>
-<body>
+<body data-page-id="nonlin/isomap">
 <nav class="nav">
   <div class="nav-inner">
     <div class="nav-logo">Stat<span>Explore</span></div>
     <ul class="nav-links">
       <li><a href="../index.html">Accueil</a></li>
-      <li><a href="index.html" class="active">Méthodes NL</a></li>
+      <li><a href="../algebre/index.html">Algèbre</a></li>
+      <li><a href="../acp/index.html">ACP</a></li>
+      <li><a href="../methodes-nonlineaires/index.html" class="active">Méthodes NL</a></li>
+      <li><a href="../ica/index.html">ICA</a></li>
+      <li><a href="../anova/index.html">ANOVA</a></li>
+      <li><a href="../afc/index.html">AFC</a></li>
     </ul>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
+<div class="mobile-nav" id="mobile-nav">
+  <button class="mobile-nav-close" id="mobile-nav-close">✕</button>
+    <a href="../index.html">Accueil</a>
+    <a href="../algebre/index.html">Algèbre</a>
+    <a href="../acp/index.html">ACP</a>
+    <a href="../methodes-nonlineaires/index.html" class="active">Méthodes NL</a>
+    <a href="../ica/index.html">ICA</a>
+    <a href="../anova/index.html">ANOVA</a>
+    <a href="../afc/index.html">AFC</a>
+</div>
 <div class="container">
 <div class="with-sidebar">
 <article>
@@ -400,5 +419,6 @@ document.querySelectorAll('.quiz-opt').forEach(opt=>{
   });
 });
 </script>
+<script src="../assets/js/progress.js"></script>
 </body>
 </html>

@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Produit Scalaire & Covariance — StatExplore</title>
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<link rel="stylesheet" href="../assets/css/global.css"/>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 :root{
@@ -148,18 +149,35 @@ input[type=number].sm:focus{outline:none;border-color:var(--algebre)}
 @media(max-width:768px){.with-sidebar{grid-template-columns:1fr}.sidebar{display:none}.two-col{grid-template-columns:1fr}.nav-links{display:none}.container{padding:0 1.25rem}}
 </style>
 </head>
-<body>
+<body data-page-id="algebre/produit-scalaire-covariance">
 
 <nav class="nav">
   <div class="nav-inner">
     <div class="nav-logo">Stat<span>Explore</span></div>
     <ul class="nav-links">
       <li><a href="../index.html">Accueil</a></li>
-      <li><a href="index.html" class="active">Algèbre</a></li>
+      <li><a href="../algebre/index.html" class="active">Algèbre</a></li>
       <li><a href="../acp/index.html">ACP</a></li>
+      <li><a href="../methodes-nonlineaires/index.html">Méthodes NL</a></li>
+      <li><a href="../ica/index.html">ICA</a></li>
+      <li><a href="../anova/index.html">ANOVA</a></li>
+      <li><a href="../afc/index.html">AFC</a></li>
     </ul>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
+<div class="mobile-nav" id="mobile-nav">
+  <button class="mobile-nav-close" id="mobile-nav-close">✕</button>
+    <a href="../index.html">Accueil</a>
+    <a href="../algebre/index.html" class="active">Algèbre</a>
+    <a href="../acp/index.html">ACP</a>
+    <a href="../methodes-nonlineaires/index.html">Méthodes NL</a>
+    <a href="../ica/index.html">ICA</a>
+    <a href="../anova/index.html">ANOVA</a>
+    <a href="../afc/index.html">AFC</a>
+</div>
 
 <div class="container">
   <div class="with-sidebar">
@@ -668,5 +686,6 @@ document.querySelectorAll('.quiz-opt').forEach(opt=>{
   });
 });
 </script>
+<script src="../assets/js/progress.js"></script>
 </body>
 </html>

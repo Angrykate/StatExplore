@@ -110,7 +110,7 @@ code, .mono {
   font-weight: 700;
   letter-spacing: -0.02em;
 }
-.nav-logo span { /* color set per module in inline styles */ }
+.nav-logo span { color: var(--module-acp); }
 .nav-links {
   display: flex;
   gap: 1.5rem;
@@ -291,6 +291,7 @@ code, .mono {
   margin: 1.5rem 0;
   text-align: center;
   font-size: 1.1rem;
+  overflow: hidden;
 }
 .formula-legend {
   font-size: 0.82rem;
@@ -504,6 +505,8 @@ code, .mono {
   color: var(--text-secondary);
   cursor: pointer;
 }
+
+/* FORMULA BOXES — horizontal scroll on small screens */
 
 @media (max-width: 768px) {
   .nav-toggle { display: flex; }

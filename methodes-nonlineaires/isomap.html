@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>ISOMAP — StatExplore</title>
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<link rel="stylesheet" href="../assets/css/global.css"/>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 :root{--font-sans:'Inter',system-ui,sans-serif;--font-mono:'JetBrains Mono',monospace;--bg:#0D0D14;--bg-card:#13131F;--bg-surface:#1E1E30;--border:rgba(255,255,255,0.08);--border-hover:rgba(255,255,255,0.15);--text-primary:#F0F0F8;--text-secondary:#8888AA;--text-muted:#55556A;--nonlin:#7C3AED;--nonlin-soft:rgba(124,58,237,0.12);--acp:#0891B2;--acp-soft:rgba(8,145,178,0.12);--ica:#059669;--ica-soft:rgba(5,150,105,0.12);--afc:#DB2777;--afc-soft:rgba(219,39,119,0.12);--r-sm:8px;--r-md:12px;--r-lg:16px}
@@ -38,7 +39,7 @@ strong{color:var(--text-primary)}
 .concept-step{padding:1.25rem 1.5rem;border-radius:var(--r-md);background:var(--bg-card);border:1px solid var(--border);border-left:3px solid var(--nonlin);margin-bottom:0.75rem}
 .concept-step-label{font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--nonlin);margin-bottom:0.4rem}
 .concept-step p{font-size:0.9rem}
-.formula-box{background:var(--bg-surface);border:1px solid var(--border-hover);border-radius:var(--r-md);padding:1.5rem 2rem;margin:1.25rem 0;text-align:center;overflow:hidden}
+.formula-box{background:var(--bg-surface);border:1px solid var(--border-hover);border-radius:var(--r-md);padding:1.5rem 2rem;margin:1.25rem 0;text-align:center;overflow-x:auto}
 .formula-legend{font-size:0.8rem;color:var(--text-secondary);margin-top:0.75rem;text-align:left;line-height:1.8}
 .formula-legend code{font-family:var(--font-mono);background:var(--bg-card);padding:1px 5px;border-radius:3px;color:var(--text-primary);font-size:0.85em}
 .method-steps{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden;margin:1.5rem 0}
@@ -84,8 +85,6 @@ canvas{display:block;background:#080810;border-radius:var(--r-md)}
 input[type=range]{accent-color:var(--nonlin);cursor:pointer}
 @media(max-width:768px){.with-sidebar{grid-template-columns:1fr}.sidebar{display:none}.nav-links{display:none}.container{padding:0 1.25rem}}
 </style>
-<link rel="stylesheet" href="../assets/css/global.css"/>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css"/>
 </head>
 <body data-page-id="nonlin/isomap">
 <nav class="nav">

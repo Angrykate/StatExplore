@@ -6,6 +6,7 @@
 <title>Applications Linéaires — StatExplore</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css"/>
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<link rel="stylesheet" href="../assets/css/global.css"/>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 :root{--font-sans:'Inter',system-ui,sans-serif;--font-mono:'JetBrains Mono',monospace;--bg:#0D0D14;--bg-card:#13131F;--bg-card-hover:#1A1A2A;--bg-surface:#1E1E30;--border:rgba(255,255,255,0.08);--border-hover:rgba(255,255,255,0.15);--text-primary:#F0F0F8;--text-secondary:#8888AA;--text-muted:#55556A;--algebre:#4F46E5;--algebre-soft:rgba(79,70,229,0.12);--acp:#0891B2;--ica:#059669;--ica-soft:rgba(5,150,105,0.12);--afc:#DB2777;--afc-soft:rgba(219,39,119,0.12);--r-sm:8px;--r-md:12px;--r-lg:16px}
@@ -40,7 +41,7 @@ p{color:var(--text-secondary);line-height:1.7}
 .concept-step{padding:1.25rem 1.5rem;border-radius:var(--r-md);background:var(--bg-card);border:1px solid var(--border);border-left:3px solid var(--algebre);margin-bottom:0.75rem}
 .concept-step-label{font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--algebre);margin-bottom:0.4rem}
 .concept-step p{font-size:0.9rem}
-.formula-box{background:var(--bg-surface);border:1px solid var(--border-hover);border-radius:var(--r-md);padding:1.5rem 2rem;margin:1.5rem 0;text-align:center;overflow:hidden}
+.formula-box{background:var(--bg-surface);border:1px solid var(--border-hover);border-radius:var(--r-md);padding:1.5rem 2rem;margin:1.5rem 0;text-align:center;overflow-x:auto}
 .formula-legend{font-size:0.8rem;color:var(--text-secondary);margin-top:0.75rem;text-align:left;line-height:1.7}
 .retenir{border-radius:var(--r-md);border:1px solid var(--algebre);background:var(--algebre-soft);padding:1.25rem 1.5rem;margin:2rem 0}
 .retenir h4{color:var(--algebre);font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.75rem}
@@ -81,7 +82,6 @@ p{color:var(--text-secondary);line-height:1.7}
 .arrow-box{text-align:center;color:var(--text-muted);font-size:1.5rem}
 @media(max-width:768px){.with-sidebar{grid-template-columns:1fr}.sidebar{display:none}.nav-links{display:none}.container{padding:0 1.25rem}}
 </style>
-<link rel="stylesheet" href="../assets/css/global.css"/>
 </head>
 <body data-page-id="algebre/applications-lineaires">
 <nav class="nav">

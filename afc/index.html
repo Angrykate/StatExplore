@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AFC — StatExplore</title>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{--font-sans:'Inter',system-ui,sans-serif;--font-mono:'JetBrains Mono',monospace;--bg:#0D0D14;--bg-card:#13131F;--bg-surface:#1E1E30;--border:rgba(255,255,255,0.08);--border-hover:rgba(255,255,255,0.15);--text-primary:#F0F0F8;--text-secondary:#8888AA;--text-muted:#55556A;--afc:#DB2777;--afc-soft:rgba(219,39,119,0.12);--acp:#0891B2;--acp-soft:rgba(8,145,178,0.12);--ica:#059669;--ica-soft:rgba(5,150,105,0.12);--anova:#D97706;--r-sm:8px;--r-md:12px;--r-lg:16px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-sans);background:var(--bg);color:var(--text-primary);line-height:1.6;font-size:16px}
+a{color:inherit;text-decoration:none}
+h1{font-size:2rem;font-weight:700;line-height:1.2}
+h2{font-size:1.4rem;font-weight:600;margin:2.5rem 0 1rem}
+h3{font-size:1.05rem;font-weight:600;margin-bottom:0.5rem}
+p{color:var(--text-secondary);line-height:1.7}
+strong{color:var(--text-primary)}
+.nav{position:sticky;top:0;z-index:100;background:rgba(13,13,20,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:1rem 0}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;max-width:1100px;margin:0 auto;padding:0 2rem}
+.nav-logo{font-size:1.1rem;font-weight:700}.nav-logo span{color:var(--acp)}
+.nav-links{display:flex;gap:1.5rem;list-style:none}
+.nav-links a{font-size:0.875rem;color:var(--text-secondary)}
+.nav-links a.active{color:var(--afc)}
+.container{max-width:1100px;margin:0 auto;padding:0 2rem}
+.with-sidebar{display:grid;grid-template-columns:1fr 260px;gap:3rem;align-items:start;padding:2.5rem 0 5rem}
+.sidebar{position:sticky;top:76px}
+.sidebar-label{font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.6rem}
+.sidebar-tip{background:var(--afc-soft);border:1px solid rgba(219,39,119,0.25);border-radius:var(--r-md);padding:0.85rem 1rem;font-size:0.8rem;color:var(--text-secondary)}
+.sidebar-tip strong{color:#FDA4AF}
+.breadcrumb{display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;color:var(--text-muted);margin-bottom:1rem}
+.breadcrumb a{color:var(--text-secondary)}
+.module-tag{display:inline-block;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:3px 9px;border-radius:4px;background:var(--afc-soft);color:var(--afc);margin-bottom:0.6rem}
+.exam-banner{background:rgba(217,119,6,0.06);border:1px solid rgba(217,119,6,0.3);border-radius:var(--r-md);padding:1.25rem 1.5rem;margin:1.5rem 0}
+.exam-banner h3{color:#FCD34D;font-size:0.88rem;margin-bottom:0.4rem}
+.exam-banner p{font-size:0.85rem}
+.concept-step{padding:1.25rem 1.5rem;border-radius:var(--r-md);background:var(--bg-card);border:1px solid var(--border);border-left:3px solid var(--afc);margin-bottom:0.75rem}
+.concept-step-label{font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--afc);margin-bottom:0.4rem}
+.concept-step p{font-size:0.9rem}
+.formula-box{background:var(--bg-surface);border:1px solid var(--border-hover);border-radius:var(--r-md);padding:1.5rem 2rem;margin:1.25rem 0;text-align:center;overflow:hidden}
+.formula-legend{font-size:0.8rem;color:var(--text-secondary);margin-top:0.75rem;text-align:left;line-height:1.8}
+.formula-legend code{font-family:var(--font-mono);background:var(--bg-card);padding:1px 5px;border-radius:3px;color:var(--text-primary);font-size:0.85em}
+.example-step{padding:1rem 1.25rem;background:var(--bg-card);border:1px solid var(--border);border-left:2px solid var(--afc);border-radius:var(--r-md);margin-bottom:0.6rem}
+.example-step .label{font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--afc);margin-bottom:0.3rem}
+.example-step p{font-size:0.875rem}
+.answer-step{padding:1rem 1.25rem;background:rgba(219,39,119,0.04);border:1px solid rgba(219,39,119,0.2);border-left:3px solid var(--afc);border-radius:var(--r-md);margin-bottom:0.6rem}
+.answer-step .label{font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--afc);margin-bottom:0.4rem}
+.answer-step p{font-size:0.875rem}
+.retenir{border-radius:var(--r-md);border:1px solid var(--afc);background:var(--afc-soft);padding:1.25rem 1.5rem;margin:2rem 0}
+.retenir h4{color:var(--afc);font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.75rem}
+.retenir ul{list-style:none;display:flex;flex-direction:column;gap:0.4rem}
+.retenir li{font-size:0.88rem;color:var(--text-secondary);padding-left:1.1rem;position:relative;line-height:1.6}
+.retenir li::before{content:'→';position:absolute;left:0;color:var(--afc)}
+.quiz{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.5rem;margin:2rem 0}
+.quiz-header{font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:1.25rem}
+.quiz-item{margin-bottom:1.5rem}.quiz-item:last-child{margin-bottom:0}
+.quiz-q{font-size:0.92rem;color:var(--text-primary);font-weight:500;margin-bottom:0.6rem;line-height:1.6}
+.quiz-opts{display:flex;flex-direction:column;gap:0.4rem}
+.quiz-opt{padding:0.55rem 1rem;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--bg-surface);color:var(--text-secondary);font-size:0.85rem;cursor:pointer;transition:all 0.15s;text-align:left;font-family:var(--font-sans)}
+.quiz-opt:hover{border-color:var(--border-hover);color:var(--text-primary)}
+.quiz-opt.correct{border-color:var(--ica);background:var(--ica-soft);color:#6EE7B7}
+.quiz-opt.wrong{border-color:var(--afc);background:var(--afc-soft);color:#FDA4AF}
+.quiz-opt:disabled{cursor:default}
+.quiz-fb{margin-top:0.6rem;font-size:0.83rem;padding:0.65rem 1rem;border-radius:var(--r-sm);display:none;line-height:1.6}
+.quiz-fb.show{display:block}
+.quiz-fb.correct{background:rgba(5,150,105,0.1);color:#6EE7B7;border:1px solid rgba(5,150,105,0.3)}
+.quiz-fb.wrong{background:rgba(219,39,119,0.1);color:#FDA4AF;border:1px solid rgba(219,39,119,0.3)}
+.quiz-divider{height:1px;background:var(--border);margin:1.25rem 0}
+.bottom-nav{display:flex;justify-content:space-between;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+.btn-ghost{display:inline-flex;align-items:center;gap:6px;padding:0.6rem 1.1rem;color:var(--text-secondary);border:1px solid var(--border);border-radius:var(--r-md);font-size:0.875rem;transition:all 0.2s;font-family:var(--font-sans);cursor:pointer;background:transparent}
+.btn-ghost:hover{border-color:var(--border-hover);color:var(--text-primary)}
+.btn-primary{display:inline-flex;align-items:center;gap:6px;padding:0.6rem 1.25rem;background:var(--afc);color:#fff;border-radius:var(--r-md);font-weight:600;font-size:0.875rem;border:none;cursor:pointer;font-family:var(--font-sans)}
+.footer{border-top:1px solid var(--border);padding:1.75rem 0;text-align:center;color:var(--text-muted);font-size:0.78rem}
+.viz{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.5rem;margin:1.5rem 0}
+.viz-title{font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:1rem}
+canvas{display:block;background:#080810;border-radius:var(--r-md)}
+.ct-table{width:100%;border-collapse:collapse;font-size:0.83rem;margin:0.75rem 0}
+.ct-table th{background:var(--bg-surface);color:var(--text-secondary);font-weight:600;padding:0.55rem 0.9rem;text-align:center;border:1px solid var(--border)}
+.ct-table td{padding:0.55rem 0.9rem;border:1px solid var(--border);text-align:center;font-family:var(--font-mono);font-size:0.8rem;color:var(--text-secondary)}
+.ct-table .hl{color:var(--afc);font-weight:600}
+.ct-table .hl2{color:#6EE7B7;font-weight:600}
+.ct-table .total{background:var(--bg-surface);color:var(--text-primary);font-weight:600}
+.ct-table td.row-label{font-family:var(--font-sans);color:var(--text-primary);font-weight:500;text-align:left}
+.vs-box{background:var(--acp-soft);border:1px solid rgba(8,145,178,0.2);border-radius:var(--r-md);padding:1.1rem 1.5rem;margin:1.5rem 0}
+.vs-box h3{color:var(--acp);font-size:0.88rem;margin-bottom:0.75rem}
+.vs-row{display:flex;gap:1rem;margin-bottom:0.4rem;font-size:0.83rem}
+.vs-row .label{min-width:80px;font-weight:600;color:var(--text-muted)}
+.vs-row .v1{flex:1;color:var(--text-secondary)}
+.vs-row .v2{flex:1;color:#FDA4AF}
+@media(max-width:768px){.with-sidebar{grid-template-columns:1fr}.sidebar{display:none}.nav-links{display:none}.container{padding:0 1.25rem}}
+</style>
+<link rel="stylesheet" href="../assets/css/global.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css"/>
+</head>
+<body data-page-id="afc/index">
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">Stat<span>Explore</span></div>
+    <ul class="nav-links">
+      <li><a href="../index.html">Accueil</a></li>
+      <li><a href="../algebre/index.html">Algèbre</a></li>
+      <li><a href="../acp/index.html">ACP</a></li>
+      <li><a href="../methodes-nonlineaires/index.html">Méthodes NL</a></li>
+      <li><a href="../ica/index.html">ICA</a></li>
+      <li><a href="../anova/index.html">ANOVA</a></li>
+      <li><a href="../afc/index.html" class="active">AFC</a></li>
+    </ul>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="mobile-nav" id="mobile-nav">
+  <button class="mobile-nav-close" id="mobile-nav-close">✕</button>
+    <a href="../index.html">Accueil</a>
+    <a href="../algebre/index.html">Algèbre</a>
+    <a href="../acp/index.html">ACP</a>
+    <a href="../methodes-nonlineaires/index.html">Méthodes NL</a>
+    <a href="../ica/index.html">ICA</a>
+    <a href="../anova/index.html">ANOVA</a>
+    <a href="../afc/index.html" class="active">AFC</a>
+</div>
+<div class="container">
+<div class="with-sidebar">
+<article>
+
+<div class="breadcrumb"><a href="../index.html">Accueil</a><span>›</span><span>AFC</span></div>
+<div class="module-tag">Module 6</div>
+<h1 style="margin:0.5rem 0 0.4rem">AFC — Analyse Factorielle des Correspondances</h1>
+<p style="font-size:1rem;margin-bottom:1.5rem">Analyser les associations entre deux variables qualitatives à partir d'un tableau de contingence — l'ACP des données catégorielles.</p>
+
+<div class="exam-banner">
+  <h3>🎯 Cette page résout l'exercice 2 de l'examen MTH1620</h3>
+  <p>Données boissons × tranches d'âge. Toutes les questions sont traitées étape par étape avec les formules exactes.</p>
+</div>
+
+<!-- 1. OBJECTIF -->
+<h2>1. Objectif et domaine d'application</h2>
+<div class="concept-step">
+  <div class="concept-step-label">Quand utilise-t-on l'AFC ?</div>
+  <p>L'AFC s'applique aux <strong>tableaux de contingence</strong> — tableaux croisant deux variables <strong>qualitatives (nominales)</strong>. Elle cherche à visualiser les associations entre les modalités des deux variables dans un plan factoriel, à l'image de ce que fait l'ACP pour des variables quantitatives.</p>
+</div>
+
+<div class="vs-box">
+  <h3>AFC vs ACP — similitudes et différences</h3>
+  <div class="vs-row"><span class="label">Données</span><span class="v1">ACP : tableau de mesures quantitatives continues</span><span class="v2">AFC : tableau de contingence (effectifs)</span></div>
+  <div class="vs-row"><span class="label">Distance</span><span class="v1">ACP : distance euclidienne ou de Mahalanobis</span><span class="v2">AFC : distance du χ² (pondérée par les fréquences)</span></div>
+  <div class="vs-row"><span class="label">Inertie</span><span class="v1">ACP : variance — trace de la matrice de corrélation</span><span class="v2">AFC : χ²/n — mesure de l'association globale</span></div>
+  <div class="vs-row"><span class="label">Symétrie</span><span class="v1">ACP : lignes et colonnes jouent des rôles différents</span><span class="v2">AFC : lignes et colonnes jouent des rôles <strong>symétriques</strong></span></div>
+</div>
+
+<!-- 2. TABLEAU DE CONTINGENCE -->
+<h2>2. Le tableau de contingence</h2>
+<div class="concept-step">
+  <div class="concept-step-label">Notations</div>
+  <p>Soit un tableau \(K\) de \(n\) lignes et \(p\) colonnes. \(k_{ij}\) = effectif de la cellule (i,j). \(k_{i.} = \sum_j k_{ij}\) = total ligne. \(k_{.j} = \sum_i k_{ij}\) = total colonne. \(k = \sum_{i,j} k_{ij}\) = total général.</p>
+</div>
+
+<div class="formula-box">
+  \[ f_{ij} = \frac{k_{ij}}{k} \quad f_{i.} = \frac{k_{i.}}{k} \quad f_{.j} = \frac{k_{.j}}{k} \]
+  <div class="formula-legend">
+    <code>fᵢⱼ</code> : fréquence relative &nbsp;·&nbsp;
+    <code>fᵢ.</code> : fréquence marginale ligne (profil moyen de la ligne i) &nbsp;·&nbsp;
+    <code>f.ⱼ</code> : fréquence marginale colonne<br>
+    <strong>Hypothèse d'indépendance :</strong> \(f_{ij} = f_{i.} \times f_{.j}\) pour tout i, j
+  </div>
+</div>
+
+<!-- 3. PROFILS LIGNES ET COLONNES -->
+<h2>3. Profils lignes et colonnes</h2>
+<div class="concept-step">
+  <div class="concept-step-label">Profils lignes</div>
+  <p>Le profil ligne de la modalité \(i\) est la distribution conditionnelle des colonnes pour cette ligne : \((f_{ij}/f_{i.})_j\). La somme de chaque profil = 1. Le <strong>profil moyen</strong> = fréquences marginales des colonnes \((f_{.j})_j\).</p>
+</div>
+<div class="concept-step" style="border-left-color:#818CF8">
+  <div class="concept-step-label" style="color:#818CF8">Profils colonnes</div>
+  <p>Le profil colonne de la modalité \(j\) est \((f_{ij}/f_{.j})_i\). Le profil moyen = fréquences marginales des lignes \((f_{i.})_i\).<br>
+  <strong>Indépendance ↔</strong> tous les profils lignes sont identiques au profil moyen, et tous les profils colonnes aussi.</p>
+</div>
+
+<!-- 4. DISTANCE DU χ² -->
+<h2>4. La distance du χ²</h2>
+<div class="formula-box">
+  \[ d^2(i,i') = \sum_{j=1}^p \frac{1}{f_{.j}} \left(\frac{f_{ij}}{f_{i.}} - \frac{f_{i'j}}{f_{i'.}}\right)^2 \]
+  <div class="formula-legend">
+    Distance entre deux profils lignes \(i\) et \(i'\). Pondérée par \(1/f_{.j}\) → normalise par la fréquence de chaque colonne.<br>
+    <strong>Propriété d'équivalence distributionnelle :</strong> regrouper deux modalités de colonne avec le même profil ne change pas la distance entre lignes.
+  </div>
+</div>
+<div class="formula-box">
+  \[ d^2(j,j') = \sum_{i=1}^n \frac{1}{f_{i.}} \left(\frac{f_{ij}}{f_{.j}} - \frac{f_{ij'}}{f_{.j'}}\right)^2 \]
+  <div class="formula-legend">
+    Distance entre deux profils colonnes \(j\) et \(j'\), pondérée par \(1/f_{i.}\).
+  </div>
+</div>
+
+<!-- 5. INERTIE TOTALE ET χ² -->
+<h2>5. Inertie totale et test du χ²</h2>
+<div class="formula-box">
+  \[ I = \frac{\chi^2}{n} = \sum_{i,j} \frac{(f_{ij} - f_{i.}f_{.j})^2}{f_{i.}f_{.j}} \]
+  <div class="formula-legend">
+    <code>I</code> : inertie totale = mesure globale de l'association entre les deux variables<br>
+    <code>χ²</code> : statistique du khi-deux de Pearson = \(n \sum_{i,j} (f_{ij}-f_{i.}f_{.j})^2/(f_{i.}f_{.j})\)<br>
+    Sous indépendance : \(\chi^2 \sim \chi^2((n-1)(p-1))\)<br>
+    Inertie totale = somme des valeurs propres = \(\sum_\alpha \lambda_\alpha\)
+  </div>
+</div>
+
+<!-- 6. EXEMPLE COMPLET — DONNÉES EXAMEN -->
+<h2>6. Exercice complet — données examen MTH1620</h2>
+<div class="exam-banner">
+  <h3>📄 Énoncé exact</h3>
+  <p>120 personnes · 3 tranches d'âge (Jeunes, Adultes, Seniors) · 4 boissons (Eau, Soda, Jus, Bière)</p>
+</div>
+
+<div class="example-step">
+  <div class="label">Tableau des effectifs K</div>
+  <table class="ct-table">
+    <tr><th></th><th>Eau</th><th>Soda</th><th>Jus</th><th>Bière</th><th class="total">Total</th></tr>
+    <tr><td class="row-label">Jeunes</td><td>5</td><td>25</td><td>10</td><td>10</td><td class="total">50</td></tr>
+    <tr><td class="row-label">Adultes</td><td>10</td><td>10</td><td>10</td><td>10</td><td class="total">40</td></tr>
+    <tr><td class="row-label">Seniors</td><td>15</td><td>5</td><td>5</td><td>5</td><td class="total">30</td></tr>
+    <tr><td class="total">Total</td><td class="total">30</td><td class="total">40</td><td class="total">25</td><td class="total">25</td><td class="total">120</td></tr>
+  </table>
+</div>
+
+<!-- Q2 — TABLEAU DES FRÉQUENCES -->
+<h3 style="margin-top:1.5rem;color:var(--afc)">Q2 — Tableau des fréquences (%)</h3>
+<div class="answer-step">
+  <div class="label">✅ Réponse — diviser chaque cellule par 120</div>
+  <table class="ct-table">
+    <tr><th></th><th>Eau</th><th>Soda</th><th>Jus</th><th>Bière</th><th class="total">Total</th></tr>
+    <tr><td class="row-label">Jeunes</td><td>4.17%</td><td class="hl">20.83%</td><td>8.33%</td><td>8.33%</td><td class="total">41.67%</td></tr>
+    <tr><td class="row-label">Adultes</td><td>8.33%</td><td>8.33%</td><td>8.33%</td><td>8.33%</td><td class="total">33.33%</td></tr>
+    <tr><td class="row-label">Seniors</td><td class="hl">12.50%</td><td>4.17%</td><td>4.17%</td><td>4.17%</td><td class="total">25.00%</td></tr>
+    <tr><td class="total">Total</td><td class="total">25%</td><td class="total">33.33%</td><td class="total">20.83%</td><td class="total">20.83%</td><td class="total">100%</td></tr>
+  </table>
+</div>
+
+<!-- Q3 — PROFIL LIGNE JEUNES -->
+<h3 style="margin-top:1.5rem;color:var(--afc)">Q3 — Profil ligne "Jeunes" et interprétation</h3>
+<div class="answer-step">
+  <div class="label">✅ Calcul</div>
+  <p>Profil ligne = effectifs de la ligne / total de la ligne. Pour Jeunes (total = 50) :</p>
+  <table class="ct-table" style="max-width:500px;margin-top:0.5rem">
+    <tr><th>Eau</th><th>Soda</th><th>Jus</th><th>Bière</th><th>Total</th></tr>
+    <tr>
+      <td>5/50 = <span class="hl">10%</span></td>
+      <td>25/50 = <span class="hl">50%</span></td>
+      <td>10/50 = <span class="hl">20%</span></td>
+      <td>10/50 = <span class="hl">20%</span></td>
+      <td class="hl2">100%</td>
+    </tr>
+  </table>
+  <p style="margin-top:0.5rem"><strong>Profil moyen</strong> (fréquences marginales des colonnes) : Eau 25%, Soda 33%, Jus 21%, Bière 21%</p>
+  <p style="margin-top:0.4rem"><strong>Interprétation :</strong> Les Jeunes sur-consomment le <strong>Soda</strong> (50% vs 33% en moyenne) et sous-consomment l'<strong>Eau</strong> (10% vs 25%). Leur profil diffère nettement du profil moyen → forte association entre jeunesse et soda.</p>
+</div>
+
+<!-- Q4 — χ² TOTAL -->
+<h3 style="margin-top:1.5rem;color:var(--afc)">Q4 — Définition et calcul du χ² total</h3>
+<div class="answer-step">
+  <div class="label">✅ Définition</div>
+  <p>Le χ² total mesure l'écart global entre les effectifs observés et les effectifs théoriques sous l'hypothèse d'indépendance :</p>
+  <p style="margin-top:0.4rem">\[\chi^2 = \sum_{i,j} \frac{(k_{ij} - k_{i.}k_{.j}/k)^2}{k_{i.}k_{.j}/k} = n \sum_{i,j} \frac{(f_{ij} - f_{i.}f_{.j})^2}{f_{i.}f_{.j}}\]</p>
+  <p style="margin-top:0.4rem"><strong>Calcul partiel (cellule Jeunes/Soda) :</strong></p>
+  <p style="margin-top:0.3rem">Effectif théorique = \(50 \times 40/120 = 16.67\)</p>
+  <p style="margin-top:0.2rem">Contribution = \((25 - 16.67)^2 / 16.67 = 69.39/16.67 \approx 4.16\)</p>
+  <p style="margin-top:0.4rem"><strong>Interprétation :</strong> Plus χ² est grand, plus l'association entre les deux variables est forte. Sous indépendance, \(\chi^2 \sim \chi^2((3-1)(4-1)) = \chi^2(6)\). Si χ² > valeur critique → on rejette l'indépendance.</p>
+</div>
+
+<!-- Q5 — INERTIE ET λ₁ -->
+<h3 style="margin-top:1.5rem;color:var(--afc)">Q5 — Inertie totale et part expliquée par λ₁ = 0.12</h3>
+<div class="answer-step">
+  <div class="label">✅ Calcul</div>
+  <p><strong>Calcul du χ² :</strong> en sommant toutes les contributions (cellule par cellule) :</p>
+  <table class="ct-table" style="max-width:520px;margin-top:0.5rem">
+    <tr><th></th><th>Eau</th><th>Soda</th><th>Jus</th><th>Bière</th></tr>
+    <tr><td class="row-label">Jeunes</td><td>4.167</td><td class="hl">4.167</td><td>0.167</td><td>0.167</td></tr>
+    <tr><td class="row-label">Adultes</td><td>0.833</td><td>2.083</td><td>0.417</td><td>0.417</td></tr>
+    <tr><td class="row-label">Seniors</td><td class="hl">5.208</td><td>4.688</td><td>0.521</td><td>0.521</td></tr>
+  </table>
+  <p style="margin-top:0.5rem">\(\chi^2 \approx 4.167+4.167+0.167+0.167+0.833+2.083+0.417+0.417+5.208+4.688+0.521+0.521 \approx 23.36\)</p>
+  <p style="margin-top:0.4rem"><strong>Inertie totale :</strong> \(I = \chi^2/n = 23.36/120 \approx 0.1947\)</p>
+  <p style="margin-top:0.4rem"><strong>Part expliquée par λ₁ = 0.12 :</strong> \(\tau_1 = \lambda_1/I = 0.12/0.1947 \approx 61.6\%\)</p>
+  <p style="margin-top:0.4rem"><strong>Commentaire :</strong> Le premier axe capte environ 62% de l'inertie totale — il explique la majeure partie de l'association entre âge et boisson. C'est une bonne représentation sur ce seul axe.</p>
+</div>
+
+<!-- Q6 — INTERPRÉTATION AXE 1 -->
+<h3 style="margin-top:1.5rem;color:var(--afc)">Q6 — Interprétation du premier axe factoriel</h3>
+<div class="example-step">
+  <div class="label">Coordonnées sur l'axe 1 (données)</div>
+  <p>Lignes : Jeunes = +0.3, Adultes = 0.0, Seniors = −0.4</p>
+  <p style="margin-top:0.3rem">Colonnes : Soda = +0.4, Eau = −0.3, Jus = −0.1, Bière = 0.0</p>
+</div>
+<div class="answer-step">
+  <div class="label">✅ Interprétation</div>
+  <p><strong>Côté positif (F1 > 0) :</strong> Jeunes et Soda. Les jeunes préfèrent le soda.</p>
+  <p style="margin-top:0.4rem"><strong>Côté négatif (F1 &lt; 0) :</strong> Seniors et Eau. Les seniors préfèrent l'eau.</p>
+  <p style="margin-top:0.4rem"><strong>Centre (F1 ≈ 0) :</strong> Adultes et Bière — pas d'association marquée avec l'axe 1.</p>
+  <p style="margin-top:0.4rem"><strong>Sens de l'axe 1 :</strong> il oppose les <strong>jeunes consommateurs de soda</strong> aux <strong>seniors consommateurs d'eau</strong>. C'est un axe de <em>génération</em> : plus on va vers les positifs, plus on est jeune et orienté soda ; plus on va vers les négatifs, plus on est âgé et orienté eau.</p>
+  <p style="margin-top:0.4rem"><strong>Règle :</strong> en AFC, les modalités qui ont des coordonnées de même signe sur un axe sont <strong>associées</strong> entre elles — elles "co-apparaissent" plus que sous indépendance.</p>
+</div>
+
+<!-- VIZ — plan factoriel AFC -->
+<h2>7. Plan factoriel AFC — visualisation</h2>
+<div class="viz">
+  <div class="viz-title">▶ Plan factoriel AFC — modalités lignes et colonnes simultanées</div>
+  <canvas id="afcCanvas" width="500" height="380" style="margin:0 auto;display:block"></canvas>
+  <p style="font-size:0.78rem;color:var(--text-muted);margin-top:0.75rem;text-align:center">
+    <span style="color:var(--afc)">●</span> Tranches d'âge (lignes) &nbsp;·&nbsp;
+    <span style="color:#818CF8">◆</span> Boissons (colonnes) &nbsp;·&nbsp;
+    Modalités proches = association forte
+  </p>
+</div>
+
+<!-- TABLEAU RÉCAP AFC vs ACP -->
+<h2>8. Bonus — ACP vs AFC (question bonus de l'examen)</h2>
+<div class="concept-step" style="border-left-color:#22D3EE">
+  <div class="concept-step-label" style="color:#22D3EE">Similitudes</div>
+  <p>Les deux méthodes cherchent une représentation en basse dimension maximisant l'inertie capturée. Les deux diagonalisent une matrice pour trouver les axes factoriels. Les deux utilisent des valeurs propres/vecteurs propres, des taux d'inertie et des plans factoriels.</p>
+</div>
+<div class="concept-step" style="border-left-color:var(--afc)">
+  <div class="concept-step-label" style="color:var(--afc)">Différences</div>
+  <p><strong>Données :</strong> ACP = quantitatives continues · AFC = qualitatives (tableau de contingence)<br>
+  <strong>Distance :</strong> ACP = euclidienne · AFC = distance du χ² (pondérée)<br>
+  <strong>Rôle des axes :</strong> ACP = asymétrique (individus vs variables) · AFC = symétrique (lignes et colonnes représentées simultanément)<br>
+  <strong>Quand choisir :</strong> ACP si variables quantitatives continues, AFC si deux variables nominales et tableau de contingence.</p>
+</div>
+
+<div class="retenir">
+  <h4>📌 À retenir / À l'examen AFC</h4>
+  <ul>
+    <li>AFC = ACP des tableaux de contingence — variables qualitatives</li>
+    <li>Profil ligne de i : \((f_{ij}/f_{i.})_j\) · Profil moyen = \((f_{.j})_j\)</li>
+    <li>Distance du χ² : \(d^2(i,i') = \sum_j \frac{1}{f_{.j}}(f_{ij}/f_{i.} - f_{i'j}/f_{i'.})^2\)</li>
+    <li>Inertie totale : \(I = \chi^2/n = \sum_\alpha \lambda_\alpha\)</li>
+    <li>Taux d'inertie de l'axe α : \(\lambda_\alpha / I\)</li>
+    <li>Indépendance ↔ tous les profils lignes = profil moyen ↔ χ² = 0 ↔ I = 0</li>
+    <li>Interprétation : modalités de même côté = associées · modalités opposées = anti-associées</li>
+    <li>Équivalence distributionnelle : fusionner deux colonnes identiques ne change pas les distances entre lignes</li>
+  </ul>
+</div>
+
+<div class="quiz">
+  <div class="quiz-header">🧠 Quiz de validation</div>
+
+  <div class="quiz-item">
+    <div class="quiz-q">Que signifie l'hypothèse d'indépendance dans un tableau de contingence ?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">Toutes les cellules ont le même effectif</button>
+      <button class="quiz-opt" data-correct="true">\(f_{ij} = f_{i.} \times f_{.j}\) pour tout (i,j) — connaître la ligne ne donne pas d'info sur la colonne</button>
+      <button class="quiz-opt" data-correct="false">Les totaux lignes sont égaux aux totaux colonnes</button>
+    </div>
+    <div class="quiz-fb" data-ok="✓ Exact ! Indépendance ↔ fréquence conjointe = produit des fréquences marginales. Les deux variables n'ont aucune influence l'une sur l'autre." data-ko="Indépendance : fᵢⱼ = fᵢ. × f.ⱼ. La distribution d'une variable ne dépend pas des modalités de l'autre."></div>
+  </div>
+
+  <div class="quiz-divider"></div>
+
+  <div class="quiz-item">
+    <div class="quiz-q">Pourquoi la distance du χ² pondère-t-elle par \(1/f_{.j}\) ?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">Pour normaliser les valeurs entre 0 et 1</button>
+      <button class="quiz-opt" data-correct="true">Pour ne pas avantager les colonnes (boissons) très fréquentes — chaque colonne contribue équitablement</button>
+      <button class="quiz-opt" data-correct="false">Pour rendre la distance symétrique</button>
+    </div>
+    <div class="quiz-fb" data-ok="✓ Correct ! Sans pondération, les colonnes très fréquentes domineraient la distance. La pondération par 1/f.ⱼ normalise l'importance de chaque colonne." data-ko="La pondération 1/f.ⱼ permet d'éviter que les colonnes fréquentes (gros effectifs) dominent la distance. Chaque colonne contribue proportionnellement à sa fréquence."></div>
+  </div>
+
+  <div class="quiz-divider"></div>
+
+  <div class="quiz-item">
+    <div class="quiz-q">Dans l'examen, l'inertie totale I ≈ 0.1947 et λ₁ = 0.12. Que vaut τ₁ ?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">12%</button>
+      <button class="quiz-opt" data-correct="true">≈ 61.6%</button>
+      <button class="quiz-opt" data-correct="false">19.47%</button>
+    </div>
+    <div class="quiz-fb" data-ok="✓ Exact ! τ₁ = λ₁/I = 0.12/0.1947 ≈ 61.6%. Le premier axe explique 62% de l'association totale." data-ko="τ₁ = λ₁/I = 0.12/0.1947 ≈ 61.6%. En AFC, le taux d'inertie = valeur propre / inertie totale (pas / nombre de variables comme en ACP normée)."></div>
+  </div>
+
+  <div class="quiz-divider"></div>
+
+  <div class="quiz-item">
+    <div class="quiz-q">Dans le plan factoriel AFC, Jeunes et Soda sont du même côté positif de l'axe 1. Que peut-on conclure ?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">Les Jeunes et le Soda ont la même fréquence marginale</button>
+      <button class="quiz-opt" data-correct="true">Les Jeunes consomment plus de Soda que la moyenne — il y a une association positive entre ces deux modalités</button>
+      <button class="quiz-opt" data-correct="false">La distance entre Jeunes et Soda est nulle</button>
+    </div>
+    <div class="quiz-fb" data-ok="✓ Correct ! Mêmes coordonnées positives → co-occurrence supérieure à l'indépendance. Les Jeunes sur-représentent la modalité Soda." data-ko="En AFC, deux modalités du même côté d'un axe = associées = co-occurrence > indépendance. Jeunes et Soda positifs → Jeunes boivent plus de Soda que la moyenne."></div>
+  </div>
+</div>
+
+<div class="bottom-nav">
+  <a href="../anova/index.html" class="btn-ghost">← ANOVA</a>
+  <a href="../index.html" class="btn-primary">Retour à l'accueil →</a>
+</div>
+</article>
+
+<aside class="sidebar">
+  <div class="sidebar-label">Module AFC</div>
+  <div class="sidebar-tip" style="margin-bottom:1.5rem">
+    <strong>I = χ²/n</strong> = inertie totale<br>
+    <strong>d²(i,i') = Σⱼ (1/f.ⱼ)(profil_i − profil_i')²</strong><br>
+    τα = λα / I
+  </div>
+  <div class="sidebar-label">Exercice examen</div>
+  <div style="background:rgba(219,39,119,0.06);border:1px solid rgba(219,39,119,0.2);border-radius:var(--r-md);padding:0.85rem 1rem;font-size:0.8rem;color:var(--text-secondary)">
+    Cette page résout <strong style="color:#FDA4AF">toutes les questions AFC</strong> de l'examen MTH1620 (données boissons × âge).
+  </div>
+</aside>
+</div>
+</div>
+<footer class="footer">StatExplore · MTH1620 · École Polytechnique de Lomé · Licence IA & Big Data</footer>
+<script>
+(function(){
+  const cvs=document.getElementById('afcCanvas');
+  const ctx=cvs.getContext('2d');
+  const W=cvs.width,H=cvs.height;
+  const cx=W/2,cy=H/2,sc=80;
+
+  const lignes=[
+    {name:'Jeunes',f1:0.3,f2:0.15,col:'#DB2777',shape:'circle'},
+    {name:'Adultes',f1:0.0,f2:-0.05,col:'#DB2777',shape:'circle'},
+    {name:'Seniors',f1:-0.4,f2:-0.10,col:'#DB2777',shape:'circle'},
+  ];
+  const colonnes=[
+    {name:'Soda',f1:0.4,f2:0.20,col:'#818CF8',shape:'diamond'},
+    {name:'Eau',f1:-0.3,f2:0.10,col:'#818CF8',shape:'diamond'},
+    {name:'Jus',f1:-0.1,f2:-0.15,col:'#818CF8',shape:'diamond'},
+    {name:'Bière',f1:0.0,f2:-0.20,col:'#818CF8',shape:'diamond'},
+  ];
+
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#080810';ctx.fillRect(0,0,W,H);
+
+  // Grille
+  ctx.strokeStyle='rgba(255,255,255,0.04)';ctx.lineWidth=1;
+  for(let x=0;x<=W;x+=sc){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<=H;y+=sc){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+
+  // Axes
+  ctx.strokeStyle='rgba(219,39,119,0.4)';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(0,cy);ctx.lineTo(W,cy);ctx.stroke();
+  ctx.strokeStyle='rgba(129,140,248,0.4)';
+  ctx.beginPath();ctx.moveTo(cx,0);ctx.lineTo(cx,H);ctx.stroke();
+
+  // Labels axes
+  ctx.fillStyle='rgba(219,39,119,0.6)';ctx.font='11px Inter,sans-serif';
+  ctx.fillText('F1 →',W-38,cy-6);
+  ctx.fillStyle='rgba(129,140,248,0.6)';
+  ctx.fillText('F2',cx+4,14);
+
+  // Zone de couleur côtés
+  ctx.fillStyle='rgba(219,39,119,0.03)';
+  ctx.fillRect(cx,pad=30,W-cx,H-pad*2);
+  ctx.fillStyle='rgba(8,145,178,0.03)';
+  ctx.fillRect(pad=30,30,cx-30,H-60);
+
+  // Lignes (âge)
+  lignes.forEach(l=>{
+    const px=cx+l.f1*sc*2.5, py=cy-l.f2*sc*2.5;
+    ctx.fillStyle=l.col;
+    ctx.beginPath();ctx.arc(px,py,9,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='rgba(13,13,20,0.8)';ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(px,py,9,0,Math.PI*2);ctx.stroke();
+    ctx.fillStyle=l.col;ctx.font='bold 12px Inter,sans-serif';
+    const dx=l.f1>0?12:-60, dy=l.f2>0?-12:18;
+    ctx.fillText(l.name,px+dx,py+dy);
+  });
+
+  // Colonnes (boissons)
+  colonnes.forEach(c=>{
+    const px=cx+c.f1*sc*2.5, py=cy-c.f2*sc*2.5;
+    const s=9;
+    ctx.fillStyle=c.col;
+    ctx.beginPath();
+    ctx.moveTo(px,py-s);ctx.lineTo(px+s,py);
+    ctx.lineTo(px,py+s);ctx.lineTo(px-s,py);
+    ctx.closePath();ctx.fill();
+    ctx.strokeStyle='rgba(13,13,20,0.8)';ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.moveTo(px,py-s);ctx.lineTo(px+s,py);
+    ctx.lineTo(px,py+s);ctx.lineTo(px-s,py);
+    ctx.closePath();ctx.stroke();
+    ctx.fillStyle=c.col;ctx.font='bold 12px Inter,sans-serif';
+    const dx=c.f1>0?12:-50, dy=c.f2>0?-12:22;
+    ctx.fillText(c.name,px+dx,py+dy);
+  });
+
+  // Ellipses d'association
+  ctx.setLineDash([4,4]);
+  ctx.strokeStyle='rgba(219,39,119,0.2)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.ellipse(cx+0.35*sc*2.5,cy-0.17*sc*2.5,sc*0.8,sc*0.6,0,0,Math.PI*2);ctx.stroke();
+  ctx.strokeStyle='rgba(8,145,178,0.2)';
+  ctx.beginPath();ctx.ellipse(cx-0.35*sc*2.5,cy,sc*0.9,sc*0.5,0,0,Math.PI*2);ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Légende
+  ctx.fillStyle='rgba(219,39,119,0.7)';ctx.font='11px Inter,sans-serif';
+  ctx.fillText('● Tranches d\'âge',15,H-30);
+  ctx.fillStyle='rgba(129,140,248,0.7)';
+  ctx.fillText('◆ Boissons',15,H-15);
+})();
+
+document.querySelectorAll('.quiz-opt').forEach(opt=>{
+  opt.addEventListener('click',()=>{
+    const item=opt.closest('.quiz-item');
+    if(item.dataset.answered)return;
+    item.dataset.answered='1';
+    const ok=opt.dataset.correct==='true';
+    opt.classList.add(ok?'correct':'wrong');
+    if(!ok)item.querySelector('[data-correct="true"]').classList.add('correct');
+    item.querySelectorAll('.quiz-opt').forEach(o=>o.disabled=true);
+    const fb=item.querySelector('.quiz-fb');
+    fb.textContent=ok?fb.dataset.ok:fb.dataset.ko;
+    fb.classList.add('show',ok?'correct':'wrong');
+  });
+});
+</script>
+<script src="../assets/js/progress.js"></script>
+</body>
+</html>

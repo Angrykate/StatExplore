@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Axes & Composantes Principales — ACP — StatExplore</title>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{--font-sans:'Inter',system-ui,sans-serif;--font-mono:'JetBrains Mono',monospace;--bg:#0D0D14;--bg-card:#13131F;--bg-surface:#1E1E30;--border:rgba(255,255,255,0.08);--border-hover:rgba(255,255,255,0.15);--text-primary:#F0F0F8;--text-secondary:#8888AA;--text-muted:#55556A;--acp:#0891B2;--acp-soft:rgba(8,145,178,0.12);--ica:#059669;--ica-soft:rgba(5,150,105,0.12);--afc:#DB2777;--afc-soft:rgba(219,39,119,0.12);--r-sm:8px;--r-md:12px;--r-lg:16px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-sans);background:var(--bg);color:var(--text-primary);line-height:1.6;font-size:16px}
+a{color:inherit;text-decoration:none}
+h1{font-size:2rem;font-weight:700;line-height:1.2}
+h2{font-size:1.4rem;font-weight:600;margin:2.5rem 0 1rem}
+h3{font-size:1.05rem;font-weight:600;margin-bottom:0.5rem}
+p{color:var(--text-secondary);line-height:1.7}
+strong{color:var(--text-primary)}
+.nav{position:sticky;top:0;z-index:100;background:rgba(13,13,20,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:1rem 0}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;max-width:1100px;margin:0 auto;padding:0 2rem}
+.nav-logo{font-size:1.1rem;font-weight:700}.nav-logo span{color:var(--acp)}
+.nav-links{display:flex;gap:1.5rem;list-style:none}
+.nav-links a{font-size:0.875rem;color:var(--text-secondary)}
+.nav-links a.active{color:var(--acp)}
+.container{max-width:1100px;margin:0 auto;padding:0 2rem}
+.with-sidebar{display:grid;grid-template-columns:1fr 260px;gap:3rem;align-items:start;padding:2.5rem 0 5rem}
+.sidebar{position:sticky;top:76px}
+.sidebar-label{font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.6rem}
+.sidebar-nav{list-style:none;margin-bottom:1.5rem}
+.sidebar-nav li a{display:block;padding:0.35rem 0.75rem;font-size:0.85rem;color:var(--text-secondary);border-left:2px solid transparent;border-radius:0 4px 4px 0;transition:all 0.15s}
+.sidebar-nav li a.active{color:var(--acp);border-left-color:var(--acp);background:var(--acp-soft)}
+.sidebar-tip{background:var(--acp-soft);border:1px solid rgba(8,145,178,0.25);border-radius:var(--r-md);padding:0.85rem 1rem;font-size:0.8rem;color:var(--text-secondary)}
+.sidebar-tip strong{color:#22D3EE}
+.breadcrumb{display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;color:var(--text-muted);margin-bottom:1rem}
+.breadcrumb a{color:var(--text-secondary)}
+.module-tag{display:inline-block;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:3px 9px;border-radius:4px;background:var(--acp-soft);color:var(--acp);margin-bottom:0.6rem}
+.priority-badge{font-size:0.62rem;font-weight:700;padding:2px 7px;border-radius:999px;background:rgba(217,119,6,0.15);color:#FCD34D;border:1px solid rgba(217,119,6,0.3);margin-left:0.4rem;vertical-align:middle}
+.concept-step{padding:1.25rem 1.5rem;border-radius:var(--r-md);background:var(--bg-card);border:1px solid var(--border);border-left:3px solid var(--acp);margin-bottom:0.75rem}
+.concept-step-label{font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--acp);margin-bottom:0.4rem}
+.concept-step p{font-size:0.9rem}
+.formula-box{background:var(--bg-surface);border:1px solid var(--border-hover);border-radius:var(--r-md);padding:1.5rem 2rem;margin:1.25rem 0;text-align:center;overflow:hidden}
+.formula-legend{font-size:0.8rem;color:var(--text-secondary);margin-top:0.75rem;text-align:left;line-height:1.8}
+.formula-legend code{font-family:var(--font-mono);background:var(--bg-card);padding:1px 5px;border-radius:3px;color:var(--text-primary);font-size:0.85em}
+.example-step{padding:1rem 1.25rem;background:var(--bg-card);border:1px solid var(--border);border-left:2px solid var(--acp);border-radius:var(--r-md);margin-bottom:0.6rem}
+.example-step .label{font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--acp);margin-bottom:0.3rem}
+.example-step p{font-size:0.875rem}
+.transition-box{background:var(--bg-card);border:1px solid rgba(8,145,178,0.4);border-radius:var(--r-lg);padding:1.5rem;margin:1.5rem 0}
+.transition-box h3{color:var(--acp);font-size:0.9rem;margin-bottom:1rem}
+.transition-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:1rem;align-items:center}
+.t-space{background:var(--bg-surface);border-radius:var(--r-md);padding:1rem;text-align:center}
+.t-space .t-label{font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.5rem}
+.t-space.rp .t-label{color:var(--acp)}
+.t-space.rn .t-label{color:#818CF8}
+.t-arrow{font-size:1.5rem;color:var(--text-muted);text-align:center}
+.retenir{border-radius:var(--r-md);border:1px solid var(--acp);background:var(--acp-soft);padding:1.25rem 1.5rem;margin:2rem 0}
+.retenir h4{color:var(--acp);font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.75rem}
+.retenir ul{list-style:none;display:flex;flex-direction:column;gap:0.4rem}
+.retenir li{font-size:0.88rem;color:var(--text-secondary);padding-left:1.1rem;position:relative;line-height:1.6}
+.retenir li::before{content:'→';position:absolute;left:0;color:var(--acp)}
+.quiz{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.5rem;margin:2rem 0}
+.quiz-header{font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:1.25rem}
+.quiz-item{margin-bottom:1.5rem}.quiz-item:last-child{margin-bottom:0}
+.quiz-q{font-size:0.92rem;color:var(--text-primary);font-weight:500;margin-bottom:0.6rem;line-height:1.6}
+.quiz-opts{display:flex;flex-direction:column;gap:0.4rem}
+.quiz-opt{padding:0.55rem 1rem;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--bg-surface);color:var(--text-secondary);font-size:0.85rem;cursor:pointer;transition:all 0.15s;text-align:left;font-family:var(--font-sans)}
+.quiz-opt:hover{border-color:var(--border-hover);color:var(--text-primary)}
+.quiz-opt.correct{border-color:var(--ica);background:var(--ica-soft);color:#6EE7B7}
+.quiz-opt.wrong{border-color:var(--afc);background:var(--afc-soft);color:#FDA4AF}
+.quiz-opt:disabled{cursor:default}
+.quiz-fb{margin-top:0.6rem;font-size:0.83rem;padding:0.65rem 1rem;border-radius:var(--r-sm);display:none;line-height:1.6}
+.quiz-fb.show{display:block}
+.quiz-fb.correct{background:rgba(5,150,105,0.1);color:#6EE7B7;border:1px solid rgba(5,150,105,0.3)}
+.quiz-fb.wrong{background:rgba(219,39,119,0.1);color:#FDA4AF;border:1px solid rgba(219,39,119,0.3)}
+.quiz-divider{height:1px;background:var(--border);margin:1.25rem 0}
+.bottom-nav{display:flex;justify-content:space-between;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+.btn-ghost{display:inline-flex;align-items:center;gap:6px;padding:0.6rem 1.1rem;color:var(--text-secondary);border:1px solid var(--border);border-radius:var(--r-md);font-size:0.875rem;transition:all 0.2s;font-family:var(--font-sans);cursor:pointer;background:transparent}
+.btn-ghost:hover{border-color:var(--border-hover);color:var(--text-primary)}
+.btn-primary{display:inline-flex;align-items:center;gap:6px;padding:0.6rem 1.25rem;background:var(--acp);color:#fff;border-radius:var(--r-md);font-weight:600;font-size:0.875rem;border:none;cursor:pointer;font-family:var(--font-sans)}
+.footer{border-top:1px solid var(--border);padding:1.75rem 0;text-align:center;color:var(--text-muted);font-size:0.78rem}
+.viz{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.5rem;margin:1.5rem 0}
+.viz-title{font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:1rem}
+canvas{display:block;background:#080810;border-radius:var(--r-md)}
+input[type=range]{accent-color:var(--acp);cursor:pointer}
+.data-table{width:100%;border-collapse:collapse;font-size:0.82rem;margin:0.75rem 0}
+.data-table th{background:var(--bg-surface);color:var(--text-secondary);font-weight:600;padding:0.5rem 0.75rem;text-align:center;border:1px solid var(--border)}
+.data-table td{padding:0.5rem 0.75rem;text-align:center;border:1px solid var(--border);font-family:var(--font-mono);font-size:0.8rem;color:var(--text-secondary)}
+.data-table .hl{color:var(--acp);font-weight:600}
+.data-table .hl2{color:#6EE7B7;font-weight:600}
+@media(max-width:768px){.with-sidebar{grid-template-columns:1fr}.sidebar{display:none}.nav-links{display:none}.container{padding:0 1.25rem}.transition-grid{grid-template-columns:1fr}}
+</style>
+<link rel="stylesheet" href="../assets/css/global.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css"/>
+</head>
+<body data-page-id="acp/axes-composantes">
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">Stat<span>Explore</span></div>
+    <ul class="nav-links">
+      <li><a href="../index.html">Accueil</a></li>
+      <li><a href="../algebre/index.html">Algèbre</a></li>
+      <li><a href="../acp/index.html" class="active">ACP</a></li>
+      <li><a href="../methodes-nonlineaires/index.html">Méthodes NL</a></li>
+      <li><a href="../ica/index.html">ICA</a></li>
+      <li><a href="../anova/index.html">ANOVA</a></li>
+      <li><a href="../afc/index.html">AFC</a></li>
+    </ul>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="mobile-nav" id="mobile-nav">
+  <button class="mobile-nav-close" id="mobile-nav-close">✕</button>
+    <a href="../index.html">Accueil</a>
+    <a href="../algebre/index.html">Algèbre</a>
+    <a href="../acp/index.html" class="active">ACP</a>
+    <a href="../methodes-nonlineaires/index.html">Méthodes NL</a>
+    <a href="../ica/index.html">ICA</a>
+    <a href="../anova/index.html">ANOVA</a>
+    <a href="../afc/index.html">AFC</a>
+</div>
+<div class="container">
+<div class="with-sidebar">
+<article>
+
+<div class="breadcrumb"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">ACP</a><span>›</span><span>Axes & Composantes</span></div>
+<div class="module-tag">Module 2 — ACP · Page 4/7</div>
+<h1 style="margin:0.5rem 0 0.4rem">Axes factoriels & Composantes principales <span class="priority-badge">Prioritaire</span></h1>
+<p style="font-size:1rem;margin-bottom:2.5rem">Les formules de transition entre ℝᵖ et ℝⁿ, les coordonnées factorielles des individus et des variables, et l'écriture matricielle complète.</p>
+
+<!-- 1. AXES FACTORIELS DANS ℝᵖ -->
+<h2>1. Les axes factoriels dans ℝᵖ</h2>
+<div class="concept-step">
+  <div class="concept-step-label">Définition</div>
+  <p>Le \(\alpha\)-ième axe factoriel \(u_\alpha\) est le <strong>vecteur propre de norme 1</strong> de la matrice \(C = X^TX\), associé à la \(\alpha\)-ième valeur propre \(\lambda_\alpha\) (triées par ordre décroissant). Il donne la <strong>direction de variance maximale</strong> dans \(\mathbb{R}^p\), orthogonale aux axes précédents.</p>
+</div>
+
+<div class="formula-box">
+  \[ C u_\alpha = \lambda_\alpha u_\alpha \quad \text{avec} \quad u_\alpha^T u_\alpha = 1 \quad \text{et} \quad u_\alpha^T u_\beta = 0 \; (\alpha \neq \beta) \]
+  <div class="formula-legend">
+    <code>uα</code> : vecteur propre unitaire de \(C\) = axe principal dans \(\mathbb{R}^p\)<br>
+    <code>λα</code> : valeur propre associée = variance des projections sur cet axe<br>
+    Les axes sont <strong>orthogonaux</strong> deux à deux : rotation du repère.
+  </div>
+</div>
+
+<!-- 2. COMPOSANTES PRINCIPALES (COORDONNÉES DES INDIVIDUS) -->
+<h2>2. Les composantes principales — coordonnées des individus</h2>
+<div class="concept-step">
+  <div class="concept-step-label">Calcul des coordonnées</div>
+  <p>Les coordonnées des \(n\) individus sur l'axe factoriel \(u_\alpha\) sont les <strong>composantes principales</strong> \(\psi_\alpha\). Ce sont les <strong>projections</strong> des individus sur l'axe :</p>
+</div>
+
+<div class="formula-box">
+  \[ \psi_\alpha = X u_\alpha \]
+  <div class="formula-legend">
+    <code>X</code> : matrice des données centrées-réduites (\(n \times p\)) &nbsp;·&nbsp;
+    <code>uα</code> : vecteur propre (\(p \times 1\)) &nbsp;·&nbsp;
+    <code>ψα</code> : vecteur des coordonnées factorielles (\(n \times 1\))<br>
+    La \(i\)-ième composante : \(\psi_{\alpha i} = \sum_{j=1}^p u_{\alpha j} \cdot x_{ij}\) (combinaison linéaire des variables)<br>
+    <strong>Propriétés :</strong> moyenne nulle \(\sum_i \psi_{\alpha i} = 0\) &nbsp;·&nbsp; variance = \(\lambda_\alpha\) &nbsp;·&nbsp; composantes non corrélées entre elles
+  </div>
+</div>
+
+<!-- 3. COORDONNÉES DES VARIABLES DANS ℝⁿ -->
+<h2>3. Coordonnées des variables dans ℝⁿ</h2>
+<div class="concept-step">
+  <div class="concept-step-label">Formule</div>
+  <p>Les coordonnées des variables sur le \(\alpha\)-ième axe dans \(\mathbb{R}^n\) sont les composantes de \(\varphi_\alpha = X^T v_\alpha = \sqrt{\lambda_\alpha} \cdot u_\alpha\). La coordonnée de la variable \(j\) sur l'axe \(\alpha\) est :</p>
+</div>
+
+<div class="formula-box">
+  \[ \varphi_{\alpha j} = \text{cor}(j, \psi_\alpha) = \sqrt{\lambda_\alpha} \cdot u_{\alpha j} \]
+  <div class="formula-legend">
+    <code>φαj</code> : coordonnée de la variable j sur l'axe α = <strong>corrélation</strong> entre la variable j et la composante principale ψα<br>
+    <code>uαj</code> : j-ième composante du vecteur propre uα &nbsp;·&nbsp; <code>√λα</code> : racine carrée de la valeur propre<br>
+    <strong>Propriété :</strong> \(|\varphi_{\alpha j}| \leq 1\) et \(\sum_\alpha \varphi_{\alpha j}^2 = 1\) (la somme sur tous les axes = 1)
+  </div>
+</div>
+
+<!-- 4. FORMULES DE TRANSITION — LA DUALITÉ COMPLÈTE -->
+<h2>4. Formules de transition ℝᵖ ↔ ℝⁿ</h2>
+<p style="margin-bottom:1rem">C'est la propriété la plus remarquable du cours : les deux espaces sont reliés sans avoir à diagonaliser deux matrices.</p>
+
+<div class="transition-box">
+  <h3>⇄ Relations de transition (à connaître par cœur)</h3>
+  <div class="transition-grid">
+    <div class="t-space rp">
+      <div class="t-label">Dans ℝᵖ</div>
+      <p style="font-size:0.82rem;color:var(--text-secondary)">Axe factoriel \(u_\alpha\)<br>vecteur propre de \(X^TX\)</p>
+      <div style="margin-top:0.5rem;font-size:0.8rem;font-family:var(--font-mono);color:var(--acp)">\(X^T X u_\alpha = \lambda_\alpha u_\alpha\)</div>
+    </div>
+    <div class="t-arrow">
+      <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:4px">→</div>
+      <div style="font-size:0.7rem;color:var(--text-muted);text-align:center">\(v_\alpha = \frac{1}{\sqrt{\lambda_\alpha}} X u_\alpha\)</div>
+      <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px">←</div>
+      <div style="font-size:0.7rem;color:var(--text-muted);text-align:center">\(u_\alpha = \frac{1}{\sqrt{\lambda_\alpha}} X^T v_\alpha\)</div>
+    </div>
+    <div class="t-space rn">
+      <div class="t-label">Dans ℝⁿ</div>
+      <p style="font-size:0.82rem;color:var(--text-secondary)">Axe factoriel \(v_\alpha\)<br>vecteur propre de \(XX^T\)</p>
+      <div style="margin-top:0.5rem;font-size:0.8rem;font-family:var(--font-mono);color:#818CF8">\(XX^T v_\alpha = \lambda_\alpha v_\alpha\)</div>
+    </div>
+  </div>
+  <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);font-size:0.82rem;color:var(--text-secondary)">
+    <strong style="color:#22D3EE">Conséquence pratique :</strong> On diagonalise uniquement la matrice de plus petite taille. Si \(n \gg p\), on diagonalise \(X^TX\) (\(p \times p\)) — c'est le cas courant. Les axes dans \(\mathbb{R}^n\) s'obtiennent par simple multiplication : \(\psi_\alpha = Xu_\alpha\).
+  </div>
+</div>
+
+<!-- 4BIS. DÉMONSTRATION FORMELLE — valeurs propres identiques -->
+<h2>4bis. Démonstration — Valeurs propres de X'X et XX' identiques <span class="priority-badge">Examen</span></h2>
+<p style="margin-bottom:1rem">C'est la question 2a de l'examen passé. Voici la démonstration complète à maîtriser.</p>
+
+<div class="concept-step" style="border-left-color:#F59E0B">
+  <div class="concept-step-label" style="color:#F59E0B">Théorème</div>
+  <p>Les valeurs propres <strong>non nulles</strong> de \(X^TX\) (de taille \(p \times p\)) et de \(XX^T\) (de taille \(n \times n\)) sont <strong>identiques</strong>, avec les mêmes multiplicités.</p>
+</div>
+
+<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-md);padding:1.25rem 1.5rem;margin:1rem 0">
+  <p style="font-size:0.82rem;font-weight:600;color:var(--text-primary);margin-bottom:1rem">Démonstration — sens (\(X^TX \to XX^T\)) :</p>
+
+  <div class="example-step">
+    <div class="label">Hypothèse de départ</div>
+    <p>Soit \(u_\alpha\) un vecteur propre de \(X^TX\) associé à la valeur propre \(\lambda_\alpha \neq 0\) :</p>
+    <p style="margin-top:0.3rem">\(X^TX \, u_\alpha = \lambda_\alpha u_\alpha \quad \cdots (1)\)</p>
+  </div>
+
+  <div class="example-step">
+    <div class="label">Pré-multiplication par X</div>
+    <p>On pré-multiplie les deux membres de (1) par \(X\) :</p>
+    <p style="margin-top:0.3rem">\(X(X^TX \, u_\alpha) = X(\lambda_\alpha u_\alpha)\)</p>
+    <p style="margin-top:0.3rem">\((XX^T)(Xu_\alpha) = \lambda_\alpha (Xu_\alpha) \quad \cdots (2)\)</p>
+  </div>
+
+  <div class="example-step">
+    <div class="label">Conclusion</div>
+    <p>Posons \(v_\alpha = Xu_\alpha\). L'équation (2) donne : \(XX^T \, v_\alpha = \lambda_\alpha v_\alpha\).</p>
+    <p style="margin-top:0.3rem">Donc <strong>\(v_\alpha = Xu_\alpha\) est vecteur propre de \(XX^T\)</strong> pour la <strong>même valeur propre \(\lambda_\alpha\)</strong>.</p>
+    <p style="margin-top:0.3rem;color:#6EE7B7;font-size:0.85rem">✓ Toute valeur propre non nulle de \(X^TX\) est aussi valeur propre de \(XX^T\).</p>
+  </div>
+
+  <div class="example-step">
+    <div class="label">Sens réciproque — symétrie</div>
+    <p>Par le même raisonnement en pré-multipliant par \(X^T\) une équation propre de \(XX^T\), on montre que toute valeur propre non nulle de \(XX^T\) est aussi valeur propre de \(X^TX\).</p>
+    <p style="margin-top:0.3rem">Donc les valeurs propres non nulles sont <strong>exactement les mêmes</strong> dans les deux matrices. ∎</p>
+  </div>
+</div>
+
+<div class="concept-step" style="border-left-color:#22D3EE">
+  <div class="concept-step-label" style="color:#22D3EE">Relation entre uk et vk — question 2b</div>
+  <p>Le vecteur \(v_\alpha = Xu_\alpha\) a une norme \(\|Xu_\alpha\|^2 = u_\alpha^T X^T X u_\alpha = \lambda_\alpha\). Pour obtenir un vecteur propre <strong>unitaire</strong> de \(XX^T\), on normalise :</p>
+</div>
+<div class="formula-box">
+  \[ v_\alpha = \frac{1}{\sqrt{\lambda_\alpha}} X u_\alpha \qquad \Longleftrightarrow \qquad u_\alpha = \frac{1}{\sqrt{\lambda_\alpha}} X^T v_\alpha \]
+  <div class="formula-legend">
+    Ce sont les <strong>formules de transition</strong> entre les deux espaces. \(v_\alpha\) est unitaire car \(\|v_\alpha\|^2 = \frac{1}{\lambda_\alpha}\|Xu_\alpha\|^2 = \frac{\lambda_\alpha}{\lambda_\alpha} = 1\).<br>
+    <strong>À l'examen :</strong> commencer par poser \(v_\alpha = Xu_\alpha\), montrer que c'est vecteur propre de \(XX^T\), puis normaliser.
+  </div>
+</div>
+
+<!-- 5. ÉCRITURE MATRICIELLE COMPLÈTE -->
+<h2>5. Écriture matricielle globale</h2>
+<div class="formula-box">
+  \[ F = X \cdot U \]
+  <div class="formula-legend">
+    <code>F</code> : matrice des coordonnées factorielles (\(n \times p\)) — les composantes principales en colonnes<br>
+    <code>X</code> : données centrées-réduites (\(n \times p\)) &nbsp;·&nbsp;
+    <code>U</code> : matrice des vecteurs propres en colonnes (\(p \times p\), orthogonale)<br>
+    La \(\alpha\)-ième colonne de F = \(\psi_\alpha = Xu_\alpha\) = coordonnées des individus sur l'axe \(\alpha\)
+  </div>
+</div>
+<div class="concept-step" style="border-left-color:#22D3EE">
+  <div class="concept-step-label" style="color:#22D3EE">Propriété clé</div>
+  <p>La matrice \(F^T F = U^T X^T X U = U^T C U = \Lambda\) est diagonale avec les valeurs propres \(\lambda_\alpha\). Les composantes principales sont <strong>non corrélées</strong> entre elles — c'est l'objectif de l'ACP.</p>
+</div>
+
+<!-- 6. VIZ INTERACTIVE — axes et composantes -->
+<h2>6. Visualisation interactive — axes et projections</h2>
+<div class="viz">
+  <div class="viz-title">▶ Axes factoriels et composantes principales sur un nuage 2D</div>
+  <div style="display:grid;grid-template-columns:auto 1fr;gap:1.5rem;align-items:start">
+    <canvas id="axesCanvas" width="300" height="300"></canvas>
+    <div>
+      <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.75rem">Génère un nuage de points avec différentes corrélations :</p>
+      <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.6rem">
+        <span style="font-size:0.8rem;color:var(--text-secondary);min-width:100px">Corrélation r</span>
+        <input type="range" id="corr-slider" min="-95" max="95" value="70" style="flex:1;accent-color:var(--acp)"/>
+        <span id="corr-val" style="font-size:0.8rem;font-family:var(--font-mono);color:var(--text-primary);min-width:40px">0.70</span>
+      </div>
+      <div style="margin-top:1rem;display:flex;flex-direction:column;gap:0.5rem">
+        <div style="font-size:0.82rem;color:var(--text-secondary)">λ₁ (axe 1) : <span id="lam1-v" style="color:var(--acp);font-family:var(--font-mono);font-weight:600">—</span></div>
+        <div style="font-size:0.82rem;color:var(--text-secondary)">λ₂ (axe 2) : <span id="lam2-v" style="color:#818CF8;font-family:var(--font-mono);font-weight:600">—</span></div>
+        <div style="font-size:0.82rem;color:var(--text-secondary)">Axe 1 explique : <span id="tau1-v" style="color:#6EE7B7;font-family:var(--font-mono);font-weight:600">—</span></div>
+      </div>
+      <p style="font-size:0.78rem;color:var(--text-muted);margin-top:1rem">
+        <span style="color:var(--acp)">■</span> Axe 1 (CP1) — variance max &nbsp;
+        <span style="color:#818CF8">■</span> Axe 2 (CP2) — orthogonal<br>
+        Les flèches cyan = projections des individus sur CP1
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- 7. EXEMPLE NUMÉRIQUE COMPLET -->
+<h2>7. Exemple numérique — coordonnées factorielles</h2>
+<p style="font-size:0.875rem;margin-bottom:1rem">On reprend la matrice de corrélation \(C = \begin{pmatrix}1 & -0.2 \\ -0.2 & 1\end{pmatrix}\) avec \(\lambda_1 = 1.2\), \(\lambda_2 = 0.8\).</p>
+
+<div class="example-step">
+  <div class="label">Vecteurs propres de C</div>
+  <p>Pour \(\lambda_1 = 1.2\) : \((C - 1.2I)u = 0\) → \(u_1 = \frac{1}{\sqrt{2}}\begin{pmatrix}1\\-1\end{pmatrix}\)</p>
+  <p style="margin-top:0.3rem">Pour \(\lambda_2 = 0.8\) : \(u_2 = \frac{1}{\sqrt{2}}\begin{pmatrix}1\\1\end{pmatrix}\)</p>
+  <p style="margin-top:0.3rem">Vérification orthogonalité : \(u_1^T u_2 = \frac{1}{2}(1\cdot1 + (-1)\cdot1) = 0\) ✓</p>
+</div>
+
+<div class="example-step">
+  <div class="label">Coordonnées factorielles des variables</div>
+  <p>Variable 1 sur axe 1 : \(\varphi_{11} = \sqrt{\lambda_1} \cdot u_{11} = \sqrt{1.2} \times \frac{1}{\sqrt{2}} = \sqrt{0.6} \approx 0.775\)</p>
+  <p style="margin-top:0.3rem">Variable 2 sur axe 1 : \(\varphi_{12} = \sqrt{1.2} \times \frac{-1}{\sqrt{2}} \approx -0.775\)</p>
+  <p style="margin-top:0.3rem">→ Les deux variables sont <strong>opposées</strong> sur l'axe 1 (corrélation négative entre elles).</p>
+</div>
+
+<div class="example-step">
+  <div class="label">Composantes principales ψ = Xu</div>
+  <p style="font-size:0.82rem">Pour chaque individu \(i\) : \(\psi_{1i} = \frac{1}{\sqrt{2}}(x_{i1} - x_{i2})\) et \(\psi_{2i} = \frac{1}{\sqrt{2}}(x_{i1} + x_{i2})\)</p>
+  <p style="font-size:0.82rem;margin-top:0.3rem">Les nouvelles coordonnées sont des <strong>combinaisons linéaires</strong> des variables d'origine.</p>
+</div>
+
+<div class="retenir">
+  <h4>📌 À retenir / À l'examen</h4>
+  <ul>
+    <li>Axes factoriels \(u_\alpha\) = vecteurs propres de \(C = X^TX\), triés par \(\lambda\) décroissant</li>
+    <li>Composantes principales : \(\psi_\alpha = X u_\alpha\) — projections des individus sur l'axe</li>
+    <li>Variance de \(\psi_\alpha\) = \(\lambda_\alpha\) · Moyenne de \(\psi_\alpha\) = 0 · Composantes non corrélées</li>
+    <li>Coordonnée d'une variable j sur l'axe α : \(\varphi_{\alpha j} = \sqrt{\lambda_\alpha} \cdot u_{\alpha j} = \text{cor}(j, \psi_\alpha)\)</li>
+    <li>Formule de transition : \(v_\alpha = \frac{1}{\sqrt{\lambda_\alpha}} X u_\alpha\) et \(u_\alpha = \frac{1}{\sqrt{\lambda_\alpha}} X^T v_\alpha\)</li>
+    <li>Écriture globale : \(F = XU\) — les composantes principales en colonnes</li>
+    <li>\(|\varphi_{\alpha j}| \leq 1\) et \(\sum_\alpha \varphi_{\alpha j}^2 = 1\) pour chaque variable</li>
+  </ul>
+</div>
+
+<div class="quiz">
+  <div class="quiz-header">🧠 Quiz de validation</div>
+  <div class="quiz-item">
+    <div class="quiz-q">Quelle est la variance de la composante principale \(\psi_\alpha\) ?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">1 (toujours)</button>
+      <button class="quiz-opt" data-correct="true">\(\lambda_\alpha\) (la valeur propre associée)</button>
+      <button class="quiz-opt" data-correct="false">\(\sqrt{\lambda_\alpha}\)</button>
+    </div>
+    <div class="quiz-fb" data-ok="✓ Correct ! Var(ψα) = ψα'ψα/n = uα'X'Xuα = uα'Cuα = λα." data-ko="Var(ψα) = uα'X'Xuα = uα'Cuα = λα·uα'uα = λα."></div>
+  </div>
+  <div class="quiz-divider"></div>
+  <div class="quiz-item">
+    <div class="quiz-q">Que représente \(\varphi_{\alpha j} = \sqrt{\lambda_\alpha} \cdot u_{\alpha j}\) ?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">La coordonnée de l'individu j sur l'axe α</button>
+      <button class="quiz-opt" data-correct="true">La corrélation entre la variable j et la composante principale ψα</button>
+      <button class="quiz-opt" data-correct="false">La valeur propre de la variable j</button>
+    </div>
+    <div class="quiz-fb" data-ok="✓ Exact ! φαj = cor(j, ψα). C'est la coordonnée de la variable j dans le cercle des corrélations." data-ko="φαj est la coordonnée de la variable j sur l'axe α, égale à la corrélation cor(j, ψα)."></div>
+  </div>
+  <div class="quiz-divider"></div>
+  <div class="quiz-item">
+    <div class="quiz-q">Pourquoi les composantes principales sont-elles non corrélées entre elles ?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">Par hypothèse de l'ACP</button>
+      <button class="quiz-opt" data-correct="true">Parce que \(F^TF = \Lambda\) est diagonale (vecteurs propres orthogonaux de C)</button>
+      <button class="quiz-opt" data-correct="false">Parce que les données sont centrées</button>
+    </div>
+    <div class="quiz-fb" data-ok="✓ Correct ! F'F = U'X'XU = U'CU = Λ (diagonale). Les termes hors-diagonale sont nuls = composantes non corrélées." data-ko="F'F = U'CU = Λ est diagonale car U diagonalise C. Les composantes sont donc non corrélées."></div>
+  </div>
+  <div class="quiz-divider"></div>
+  <div class="quiz-item">
+    <div class="quiz-q">Si \(\lambda_1 = 3.5\) et \(u_{11} = 0.6\), que vaut \(\varphi_{11}\) (coordonnée de X₁ sur axe 1) ?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">2.1</button>
+      <button class="quiz-opt" data-correct="false">0.6</button>
+      <button class="quiz-opt" data-correct="true">≈ 1.122</button>
+    </div>
+    <div class="quiz-fb" data-ok="✓ Exact ! φ₁₁ = √λ₁ × u₁₁ = √3.5 × 0.6 ≈ 1.871 × 0.6 ≈ 1.122." data-ko="φ₁₁ = √λ₁ × u₁₁ = √3.5 × 0.6 ≈ 1.871 × 0.6 ≈ 1.122."></div>
+  </div>
+</div>
+
+<div class="bottom-nav">
+  <a href="espace-variables.html" class="btn-ghost">← Espace des variables</a>
+  <a href="inertie-qualite.html" class="btn-primary">Inertie & Qualité →</a>
+</div>
+</article>
+
+<aside class="sidebar">
+  <div class="sidebar-label">Module ACP</div>
+  <ul class="sidebar-nav">
+    <li><a href="introduction-principe.html">Introduction & Principe</a></li>
+    <li><a href="espace-individus.html">Espace des individus ℝᵖ</a></li>
+    <li><a href="espace-variables.html">Espace des variables ℝⁿ</a></li>
+    <li><a href="axes-composantes.html" class="active">Axes & Composantes</a></li>
+    <li><a href="inertie-qualite.html">Inertie & Qualité</a></li>
+    <li><a href="individus-variables-supp.html">Éléments supplémentaires</a></li>
+    <li><a href="interpretation-exemple.html">Interprétation & Exemple</a></li>
+  </ul>
+  <div class="sidebar-label">Formules clés</div>
+  <div class="sidebar-tip">
+    <strong>ψα = Xuα</strong> (composantes) <br>
+    <strong>φαj = √λα · uαj</strong> (coord. variables)<br>
+    <strong>vα = (1/√λα)Xuα</strong> (transition)
+  </div>
+</aside>
+</div>
+</div>
+<footer class="footer">StatExplore · MTH1620 · École Polytechnique de Lomé · Licence IA & Big Data</footer>
+<script>
+(function(){
+  const cvs=document.getElementById('axesCanvas');
+  const ctx=cvs.getContext('2d');
+  const W=cvs.width,H=cvs.height,cx=W/2,cy=H/2;
+
+  function genPoints(r,n=35){
+    const pts=[];
+    for(let i=0;i<n;i++){
+      const u=(Math.sin(i*2.3)*0.5+Math.cos(i*1.7)*0.5)*80;
+      const v=(Math.sin(i*3.1)*0.5+Math.cos(i*0.9)*0.5)*80;
+      const x=u;
+      const y=r*u+Math.sqrt(1-r*r)*v;
+      pts.push([x,y]);
+    }
+    return pts;
+  }
+
+  function pca2d(pts){
+    const n=pts.length;
+    const mx=pts.reduce((s,p)=>s+p[0],0)/n;
+    const my=pts.reduce((s,p)=>s+p[1],0)/n;
+    const cp=pts.map(p=>[p[0]-mx,p[1]-my]);
+    const c11=cp.reduce((s,p)=>s+p[0]*p[0],0)/n;
+    const c12=cp.reduce((s,p)=>s+p[0]*p[1],0)/n;
+    const c22=cp.reduce((s,p)=>s+p[1]*p[1],0)/n;
+    const tr=c11+c22,det=c11*c22-c12*c12;
+    const disc=Math.sqrt(Math.max(0,tr*tr/4-det));
+    const l1=tr/2+disc,l2=tr/2-disc;
+    let ux,uy;
+    if(Math.abs(c12)>1e-8){const t=l1-c11;const nm=Math.sqrt(c12*c12+t*t);ux=c12/nm;uy=t/nm;}
+    else{ux=1;uy=0;}
+    return{l1,l2,ux,uy,cp};
+  }
+
+  function arrow(x1,y1,x2,y2,col,w){
+    ctx.save();ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=w||2;
+    ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+    const a=Math.atan2(y2-y1,x2-x1),h=9;
+    ctx.beginPath();ctx.moveTo(x2,y2);
+    ctx.lineTo(x2-h*Math.cos(a-0.4),y2-h*Math.sin(a-0.4));
+    ctx.lineTo(x2-h*Math.cos(a+0.4),y2-h*Math.sin(a+0.4));
+    ctx.closePath();ctx.fill();ctx.restore();
+  }
+
+  function draw(){
+    const r=parseInt(document.getElementById('corr-slider').value)/100;
+    document.getElementById('corr-val').textContent=r.toFixed(2);
+    const pts=genPoints(r);
+    const{l1,l2,ux,uy,cp}=pca2d(pts);
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#080810';ctx.fillRect(0,0,W,H);
+    ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=1;
+    for(let x=0;x<=W;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+    for(let y=0;y<=H;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+    ctx.strokeStyle='rgba(255,255,255,0.12)';
+    ctx.beginPath();ctx.moveTo(cx,0);ctx.lineTo(cx,H);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,cy);ctx.lineTo(W,cy);ctx.stroke();
+
+    // Projections sur axe 1
+    cp.forEach(([x,y])=>{
+      const proj=x*ux+y*uy;
+      const hx=cx+proj*ux,hy=cy+proj*uy;
+      ctx.strokeStyle='rgba(34,211,238,0.15)';ctx.lineWidth=1;ctx.setLineDash([2,3]);
+      ctx.beginPath();ctx.moveTo(cx+x,cy-y);ctx.lineTo(hx,cy-proj*uy);ctx.stroke();
+      ctx.setLineDash([]);
+    });
+
+    // Points
+    cp.forEach(([x,y])=>{
+      ctx.fillStyle='rgba(8,145,178,0.8)';
+      ctx.beginPath();ctx.arc(cx+x,cy-y,4,0,Math.PI*2);ctx.fill();
+    });
+
+    // Axe 1
+    const sc=Math.sqrt(l1)*2.5;
+    arrow(cx-ux*sc,cy+uy*sc,cx+ux*sc,cy-uy*sc,'#0891B2',3);
+    ctx.fillStyle='#0891B2';ctx.font='bold 12px Inter,sans-serif';
+    ctx.fillText('CP1',cx+ux*sc+6,cy-uy*sc+4);
+
+    // Axe 2 (orthogonal)
+    const sc2=Math.sqrt(l2)*2.5;
+    arrow(cx+uy*sc2,cy+ux*sc2,cx-uy*sc2,cy-ux*sc2,'#818CF8',2);
+    ctx.fillStyle='#818CF8';ctx.font='bold 12px Inter,sans-serif';
+    ctx.fillText('CP2',cx-uy*sc2-30,cy-ux*sc2);
+
+    document.getElementById('lam1-v').textContent=l1.toFixed(3);
+    document.getElementById('lam2-v').textContent=l2.toFixed(3);
+    document.getElementById('tau1-v').textContent=((l1/(l1+l2))*100).toFixed(1)+'%';
+  }
+
+  document.getElementById('corr-slider').addEventListener('input',draw);
+  draw();
+})();
+
+document.querySelectorAll('.quiz-opt').forEach(opt=>{
+  opt.addEventListener('click',()=>{
+    const item=opt.closest('.quiz-item');
+    if(item.dataset.answered)return;
+    item.dataset.answered='1';
+    const ok=opt.dataset.correct==='true';
+    opt.classList.add(ok?'correct':'wrong');
+    if(!ok)item.querySelector('[data-correct="true"]').classList.add('correct');
+    item.querySelectorAll('.quiz-opt').forEach(o=>o.disabled=true);
+    const fb=item.querySelector('.quiz-fb');
+    fb.textContent=ok?fb.dataset.ok:fb.dataset.ko;
+    fb.classList.add('show',ok?'correct':'wrong');
+  });
+});
+</script>
+<script src="../assets/js/progress.js"></script>
+</body>
+</html>

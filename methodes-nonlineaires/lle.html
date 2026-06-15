@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LLE — StatExplore</title>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{--font-sans:'Inter',system-ui,sans-serif;--font-mono:'JetBrains Mono',monospace;--bg:#0D0D14;--bg-card:#13131F;--bg-surface:#1E1E30;--border:rgba(255,255,255,0.08);--border-hover:rgba(255,255,255,0.15);--text-primary:#F0F0F8;--text-secondary:#8888AA;--text-muted:#55556A;--nonlin:#7C3AED;--nonlin-soft:rgba(124,58,237,0.12);--acp:#0891B2;--acp-soft:rgba(8,145,178,0.12);--ica:#059669;--ica-soft:rgba(5,150,105,0.12);--afc:#DB2777;--afc-soft:rgba(219,39,119,0.12);--r-sm:8px;--r-md:12px;--r-lg:16px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-sans);background:var(--bg);color:var(--text-primary);line-height:1.6;font-size:16px}
+a{color:inherit;text-decoration:none}
+h1{font-size:2rem;font-weight:700;line-height:1.2}
+h2{font-size:1.4rem;font-weight:600;margin:2.5rem 0 1rem}
+h3{font-size:1.05rem;font-weight:600;margin-bottom:0.5rem}
+p{color:var(--text-secondary);line-height:1.7}
+strong{color:var(--text-primary)}
+.nav{position:sticky;top:0;z-index:100;background:rgba(13,13,20,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:1rem 0}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;max-width:1100px;margin:0 auto;padding:0 2rem}
+.nav-logo{font-size:1.1rem;font-weight:700}.nav-logo span{color:var(--acp)}
+.nav-links{display:flex;gap:1.5rem;list-style:none}
+.nav-links a{font-size:0.875rem;color:var(--text-secondary)}
+.nav-links a.active{color:var(--nonlin)}
+.container{max-width:1100px;margin:0 auto;padding:0 2rem}
+.with-sidebar{display:grid;grid-template-columns:1fr 260px;gap:3rem;align-items:start;padding:2.5rem 0 5rem}
+.sidebar{position:sticky;top:76px}
+.sidebar-label{font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.6rem}
+.sidebar-nav{list-style:none;margin-bottom:1.5rem}
+.sidebar-nav li a{display:block;padding:0.35rem 0.75rem;font-size:0.85rem;color:var(--text-secondary);border-left:2px solid transparent;border-radius:0 4px 4px 0;transition:all 0.15s}
+.sidebar-nav li a.active{color:var(--nonlin);border-left-color:var(--nonlin);background:var(--nonlin-soft)}
+.sidebar-tip{background:var(--nonlin-soft);border:1px solid rgba(124,58,237,0.25);border-radius:var(--r-md);padding:0.85rem 1rem;font-size:0.8rem;color:var(--text-secondary)}
+.sidebar-tip strong{color:#A78BFA}
+.breadcrumb{display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;color:var(--text-muted);margin-bottom:1rem}
+.breadcrumb a{color:var(--text-secondary)}
+.module-tag{display:inline-block;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:3px 9px;border-radius:4px;background:var(--nonlin-soft);color:var(--nonlin);margin-bottom:0.6rem}
+.concept-step{padding:1.25rem 1.5rem;border-radius:var(--r-md);background:var(--bg-card);border:1px solid var(--border);border-left:3px solid var(--nonlin);margin-bottom:0.75rem}
+.concept-step-label{font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--nonlin);margin-bottom:0.4rem}
+.concept-step p{font-size:0.9rem}
+.formula-box{background:var(--bg-surface);border:1px solid var(--border-hover);border-radius:var(--r-md);padding:1.5rem 2rem;margin:1.25rem 0;text-align:center;overflow:hidden}
+.formula-legend{font-size:0.8rem;color:var(--text-secondary);margin-top:0.75rem;text-align:left;line-height:1.8}
+.formula-legend code{font-family:var(--font-mono);background:var(--bg-card);padding:1px 5px;border-radius:3px;color:var(--text-primary);font-size:0.85em}
+.method-steps{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden;margin:1.5rem 0}
+.method-step{display:flex;align-items:flex-start;gap:1rem;padding:1.1rem 1.25rem;border-bottom:1px solid var(--border)}
+.method-step:last-child{border-bottom:none}
+.step-num{width:28px;height:28px;min-width:28px;border-radius:50%;background:var(--nonlin-soft);color:var(--nonlin);font-size:0.8rem;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.method-step h4{font-size:0.9rem;margin-bottom:0.2rem}
+.method-step p{font-size:0.85rem}
+.retenir{border-radius:var(--r-md);border:1px solid var(--nonlin);background:var(--nonlin-soft);padding:1.25rem 1.5rem;margin:2rem 0}
+.retenir h4{color:var(--nonlin);font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.75rem}
+.retenir ul{list-style:none;display:flex;flex-direction:column;gap:0.4rem}
+.retenir li{font-size:0.88rem;color:var(--text-secondary);padding-left:1.1rem;position:relative;line-height:1.6}
+.retenir li::before{content:'→';position:absolute;left:0;color:var(--nonlin)}
+.vs-acp{background:rgba(8,145,178,0.06);border:1px solid rgba(8,145,178,0.2);border-radius:var(--r-md);padding:1.1rem 1.5rem;margin:1.5rem 0}
+.vs-acp h3{color:var(--acp);font-size:0.88rem;margin-bottom:0.75rem}
+.vs-row{display:flex;gap:1rem;margin-bottom:0.4rem;font-size:0.83rem}
+.vs-row .label{min-width:60px;font-weight:600;color:var(--text-muted)}
+.vs-row .acp-val{flex:1;color:var(--text-secondary)}
+.vs-row .nl-val{flex:1;color:#A78BFA}
+.quiz{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.5rem;margin:2rem 0}
+.quiz-header{font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:1.25rem}
+.quiz-item{margin-bottom:1.5rem}.quiz-item:last-child{margin-bottom:0}
+.quiz-q{font-size:0.92rem;color:var(--text-primary);font-weight:500;margin-bottom:0.6rem;line-height:1.6}
+.quiz-opts{display:flex;flex-direction:column;gap:0.4rem}
+.quiz-opt{padding:0.55rem 1rem;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--bg-surface);color:var(--text-secondary);font-size:0.85rem;cursor:pointer;transition:all 0.15s;text-align:left;font-family:var(--font-sans)}
+.quiz-opt:hover{border-color:var(--border-hover);color:var(--text-primary)}
+.quiz-opt.correct{border-color:var(--ica);background:var(--ica-soft);color:#6EE7B7}
+.quiz-opt.wrong{border-color:var(--afc);background:var(--afc-soft);color:#FDA4AF}
+.quiz-opt:disabled{cursor:default}
+.quiz-fb{margin-top:0.6rem;font-size:0.83rem;padding:0.65rem 1rem;border-radius:var(--r-sm);display:none;line-height:1.6}
+.quiz-fb.show{display:block}
+.quiz-fb.correct{background:rgba(5,150,105,0.1);color:#6EE7B7;border:1px solid rgba(5,150,105,0.3)}
+.quiz-fb.wrong{background:rgba(219,39,119,0.1);color:#FDA4AF;border:1px solid rgba(219,39,119,0.3)}
+.quiz-divider{height:1px;background:var(--border);margin:1.25rem 0}
+.bottom-nav{display:flex;justify-content:space-between;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+.btn-ghost{display:inline-flex;align-items:center;gap:6px;padding:0.6rem 1.1rem;color:var(--text-secondary);border:1px solid var(--border);border-radius:var(--r-md);font-size:0.875rem;transition:all 0.2s;font-family:var(--font-sans);cursor:pointer;background:transparent}
+.btn-ghost:hover{border-color:var(--border-hover);color:var(--text-primary)}
+.btn-primary{display:inline-flex;align-items:center;gap:6px;padding:0.6rem 1.25rem;background:var(--nonlin);color:#fff;border-radius:var(--r-md);font-weight:600;font-size:0.875rem;border:none;cursor:pointer;font-family:var(--font-sans)}
+.footer{border-top:1px solid var(--border);padding:1.75rem 0;text-align:center;color:var(--text-muted);font-size:0.78rem}
+.viz{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.5rem;margin:1.5rem 0}
+.viz-title{font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:1rem}
+canvas{display:block;background:#080810;border-radius:var(--r-md)}
+input[type=range]{accent-color:var(--nonlin);cursor:pointer}
+@media(max-width:768px){.with-sidebar{grid-template-columns:1fr}.sidebar{display:none}.nav-links{display:none}.container{padding:0 1.25rem}}
+</style>
+<link rel="stylesheet" href="../assets/css/global.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css"/>
+</head>
+<body data-page-id="nonlin/lle">
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">Stat<span>Explore</span></div>
+    <ul class="nav-links">
+      <li><a href="../index.html">Accueil</a></li>
+      <li><a href="../algebre/index.html">Algèbre</a></li>
+      <li><a href="../acp/index.html">ACP</a></li>
+      <li><a href="../methodes-nonlineaires/index.html" class="active">Méthodes NL</a></li>
+      <li><a href="../ica/index.html">ICA</a></li>
+      <li><a href="../anova/index.html">ANOVA</a></li>
+      <li><a href="../afc/index.html">AFC</a></li>
+    </ul>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="mobile-nav" id="mobile-nav">
+  <button class="mobile-nav-close" id="mobile-nav-close">✕</button>
+    <a href="../index.html">Accueil</a>
+    <a href="../algebre/index.html">Algèbre</a>
+    <a href="../acp/index.html">ACP</a>
+    <a href="../methodes-nonlineaires/index.html" class="active">Méthodes NL</a>
+    <a href="../ica/index.html">ICA</a>
+    <a href="../anova/index.html">ANOVA</a>
+    <a href="../afc/index.html">AFC</a>
+</div>
+<div class="container">
+<div class="with-sidebar">
+<article>
+<div class="breadcrumb"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">Méthodes NL</a><span>›</span><span>LLE</span></div>
+<div class="module-tag">Module 3 · Page 2/4</div>
+<h1 style="margin:0.5rem 0 0.4rem">LLE — Locally Linear Embedding</h1>
+<p style="font-size:1rem;margin-bottom:2.5rem">Préserver les relations locales entre voisins : chaque point est une combinaison linéaire de ses voisins, et cette propriété doit être conservée en basse dimension.</p>
+
+<h2>1. L'idée fondamentale</h2>
+<div class="concept-step">
+  <div class="concept-step-label">Intuition</div>
+  <p>LLE part d'une observation simple : <strong>localement, une variété ressemble à un espace euclidien</strong>. Autour de chaque point, le voisinage est approximativement plat. On peut donc exprimer chaque point comme une <strong>combinaison linéaire de ses voisins</strong>. Si on trouve la représentation basse dimension qui respecte ces mêmes poids de reconstruction, on "déplie" la variété.</p>
+</div>
+
+<h2>2. Algorithme en 3 étapes</h2>
+<div class="method-steps">
+  <div class="method-step">
+    <div class="step-num">1</div>
+    <div>
+      <h4>Trouver les k plus proches voisins</h4>
+      <p>Pour chaque point \(x_i \in \mathbb{R}^p\), identifier ses \(k\) plus proches voisins \(\mathcal{N}(i)\) par distance euclidienne.</p>
+    </div>
+  </div>
+  <div class="method-step">
+    <div class="step-num">2</div>
+    <div>
+      <h4>Calculer les poids de reconstruction</h4>
+      <p>Trouver les poids \(W_{ij}\) qui minimisent l'erreur de reconstruction locale de chaque point par ses voisins. C'est un problème de moindres carrés avec contrainte :</p>
+    </div>
+  </div>
+  <div class="method-step">
+    <div class="step-num">3</div>
+    <div>
+      <h4>Trouver l'embedding basse dimension</h4>
+      <p>Trouver les coordonnées \(y_i \in \mathbb{R}^q\) qui respectent les mêmes poids \(W_{ij}\). On minimise une erreur similaire, mais cette fois les coordonnées sont les inconnues.</p>
+    </div>
+  </div>
+</div>
+
+<h2>3. Les formules d'optimisation</h2>
+
+<div class="concept-step">
+  <div class="concept-step-label">Étape 2 — Poids de reconstruction</div>
+  <p>Minimiser l'erreur de reconstruction sous contrainte de somme des poids = 1 :</p>
+</div>
+<div class="formula-box">
+  \[ \min_{W} \sum_i \left\| x_i - \sum_{j \in \mathcal{N}(i)} W_{ij} x_j \right\|^2 \quad \text{s.c.} \quad \sum_j W_{ij} = 1 \]
+  <div class="formula-legend">
+    <code>Wᵢⱼ</code> : poids de reconstruction du point \(x_j\) pour reconstruire \(x_i\) &nbsp;·&nbsp;
+    <code>N(i)</code> : k plus proches voisins de \(x_i\)<br>
+    Les poids sont nuls hors du voisinage : \(W_{ij} = 0\) si \(j \notin \mathcal{N}(i)\)<br>
+    Solution par moindres carrés locaux : \(W_{ij} = \frac{\sum_l (G^{-1})_{jl}}{\sum_{mn}(G^{-1})_{mn}}\) où \(G_{jl} = (x_i - x_j)^T(x_i - x_l)\)
+  </div>
+</div>
+
+<div class="concept-step" style="border-left-color:#22D3EE">
+  <div class="concept-step-label" style="color:#22D3EF">Étape 3 — Embedding basse dimension</div>
+  <p>Les poids \(W_{ij}\) sont fixés. On cherche les \(y_i \in \mathbb{R}^q\) minimisant :</p>
+</div>
+<div class="formula-box">
+  \[ \min_{Y} \sum_i \left\| y_i - \sum_{j \in \mathcal{N}(i)} W_{ij} y_j \right\|^2 = \min_Y \text{tr}(Y^T M Y) \]
+  <div class="formula-legend">
+    <code>M = (I - W)^T(I - W)</code> : matrice de coût (sparse, \(n \times n\)) &nbsp;·&nbsp;
+    <code>Y</code> : matrice des coordonnées basses dimension (\(n \times q\))<br>
+    Solution : les \(q\) vecteurs propres de \(M\) correspondant aux <strong>\(q\) plus petites valeurs propres non nulles</strong>.<br>
+    Contrainte : \(Y^TY = I\) (coordonnées centrées et orthogonales)
+  </div>
+</div>
+
+<div class="concept-step" style="border-left-color:#F59E0B">
+  <div class="concept-step-label" style="color:#F59E0B">Lien avec l'ACP</div>
+  <p>Dans les deux cas, on diagonalise une matrice. En ACP : on cherche les <strong>plus grandes</strong> valeurs propres de \(X^TX\) (variance maximale). En LLE : on cherche les <strong>plus petites</strong> valeurs propres non nulles de \(M\) (erreur de reconstruction minimale).</p>
+</div>
+
+<h2>4. Visualisation — reconstruction locale</h2>
+<div class="viz">
+  <div class="viz-title">▶ Poids de reconstruction locale — chaque point est une combinaison de ses voisins</div>
+  <div style="display:grid;grid-template-columns:auto 1fr;gap:1.5rem;align-items:start">
+    <canvas id="lleCanvas" width="280" height="260"></canvas>
+    <div>
+      <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.6rem">
+        <span style="font-size:0.8rem;color:var(--text-secondary);min-width:40px">k =</span>
+        <input type="range" id="lle-k" min="2" max="6" value="3" style="flex:1;accent-color:var(--nonlin)"/>
+        <span id="lle-k-v" style="font-size:0.8rem;font-family:var(--font-mono);color:var(--text-primary);min-width:20px">3</span>
+      </div>
+      <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.75rem">Le point <span style="color:#F59E0B">orange</span> est reconstruit à partir de ses k voisins <span style="color:#A78BFA">violets</span>. Les flèches montrent les poids de reconstruction.</p>
+      <div id="lle-weights" style="font-size:0.82rem;font-family:var(--font-mono);color:var(--text-secondary)"></div>
+    </div>
+  </div>
+</div>
+
+<h2>5. Limites de LLE</h2>
+<div class="concept-step" style="border-left-color:#FDA4AF">
+  <div class="concept-step-label" style="color:#FDA4AF">Limites</div>
+  <p><strong>Sensibilité à k :</strong> comme ISOMAP, k trop petit = graphe disconnecté, k trop grand = voisinage non local.<br>
+  <strong>Variétés non convexes :</strong> LLE peut "plier" incorrectement la variété si la géométrie globale est complexe.<br>
+  <strong>Pas de fonction de projection :</strong> impossible de projeter de nouveaux points sans recalculer tout l'algorithme (contrairement à l'ACP).<br>
+  <strong>Sensibilité au bruit :</strong> les poids de reconstruction peuvent être instables si les données sont bruitées.</p>
+</div>
+
+<div class="vs-acp">
+  <h3>LLE vs ACP vs ISOMAP</h3>
+  <div class="vs-row"><span class="label">ACP</span><span class="acp-val">Variance globale maximale — distances euclidiennes</span><span class="nl-val">LLE : poids de reconstruction locale</span></div>
+  <div class="vs-row"><span class="label">ISOMAP</span><span class="acp-val">Distances géodésiques globales</span><span class="nl-val">LLE : structure <em>locale</em> uniquement (pas globale)</span></div>
+  <div class="vs-row"><span class="label">Matrice</span><span class="acp-val">Grandes vp de X'X (ACP)</span><span class="nl-val">Petites vp non nulles de M = (I−W)'(I−W)</span></div>
+  <div class="vs-row"><span class="label">Coût</span><span class="acp-val">O(p³)</span><span class="nl-val">O(nk³) pour les poids + O(dn²) pour l'embedding</span></div>
+</div>
+
+<div class="retenir">
+  <h4>📌 À retenir / À l'examen</h4>
+  <ul>
+    <li>LLE = préserver les <strong>poids de reconstruction locale</strong> en passant en basse dimension</li>
+    <li>Étape 1 : k-NN &nbsp;·&nbsp; Étape 2 : minimiser \(\|x_i - \sum W_{ij}x_j\|^2\) sous \(\sum W_{ij}=1\) &nbsp;·&nbsp; Étape 3 : minimiser \(\|y_i - \sum W_{ij}y_j\|^2\)</li>
+    <li>Solution étape 3 : petites valeurs propres non nulles de \(M = (I-W)^T(I-W)\)</li>
+    <li>Différence ACP/LLE : ACP = grandes vp (variance max), LLE = petites vp (erreur locale min)</li>
+    <li>Hypothèse clé : la variété est <strong>localement plate</strong> (approximation linéaire locale valide)</li>
+    <li>Limite : pas de projection de nouveaux points, sensible au bruit et à k</li>
+  </ul>
+</div>
+
+<div class="quiz">
+  <div class="quiz-header">🧠 Quiz de validation</div>
+  <div class="quiz-item">
+    <div class="quiz-q">Quelle est l'hypothèse clé sur laquelle repose LLE ?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">La variété est globalement linéaire</button>
+      <button class="quiz-opt" data-correct="true">La variété est localement plate — chaque voisinage ressemble à un espace euclidien</button>
+      <button class="quiz-opt" data-correct="false">Les distances géodésiques sont préservées globalement</button>
+    </div>
+    <div class="quiz-fb" data-ok="✓ Correct ! LLE exploite la linéarité locale : dans un petit voisinage, la variété est approximativement plate, donc un point peut être reconstruit linéairement par ses voisins." data-ko="LLE repose sur la linéarité LOCALE. Chaque voisinage est approximativement plat → reconstruction linéaire possible."></div>
+  </div>
+  <div class="quiz-divider"></div>
+  <div class="quiz-item">
+    <div class="quiz-q">Dans l'étape d'embedding (étape 3), quels vecteurs propres de M doit-on prendre ?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">Les q vecteurs propres associés aux plus grandes valeurs propres</button>
+      <button class="quiz-opt" data-correct="true">Les q vecteurs propres associés aux plus petites valeurs propres non nulles</button>
+      <button class="quiz-opt" data-correct="false">Tous les vecteurs propres de M</button>
+    </div>
+    <div class="quiz-fb" data-ok="✓ Exact ! On minimise tr(Y'MY), donc on prend les q petites valeurs propres non nulles de M. La plus petite vp = 0 correspond à la solution triviale constante." data-ko="On minimise tr(Y'MY) → on prend les q PLUS PETITES valeurs propres NON NULLES. La vp = 0 donne la solution triviale et est exclue."></div>
+  </div>
+  <div class="quiz-divider"></div>
+  <div class="quiz-item">
+    <div class="quiz-q">Quelle contrainte est imposée sur les poids Wᵢⱼ dans LLE ?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">\(W_{ij} \geq 0\) pour tous i, j</button>
+      <button class="quiz-opt" data-correct="true">\(\sum_j W_{ij} = 1\) pour chaque i (les poids somment à 1)</button>
+      <button class="quiz-opt" data-correct="false">\(W_{ij} = W_{ji}\) (symétrie)</button>
+    </div>
+    <div class="quiz-fb" data-ok="✓ Correct ! La contrainte Σⱼ Wᵢⱼ = 1 assure l'invariance par translation et changement d'échelle de la reconstruction." data-ko="La contrainte est Σⱼ Wᵢⱼ = 1 (invariance par translation). Les poids peuvent être négatifs — c'est différent d'une interpolation."></div>
+  </div>
+</div>
+
+<div class="bottom-nav">
+  <a href="isomap.html" class="btn-ghost">← ISOMAP</a>
+  <a href="tsne.html" class="btn-primary">t-SNE →</a>
+</div>
+</article>
+
+<aside class="sidebar">
+  <div class="sidebar-label">Module Méthodes NL</div>
+  <ul class="sidebar-nav">
+    <li><a href="isomap.html">ISOMAP</a></li>
+    <li><a href="lle.html" class="active">LLE</a></li>
+    <li><a href="tsne.html">t-SNE</a></li>
+    <li><a href="umap.html">UMAP</a></li>
+  </ul>
+  <div class="sidebar-label">Idée clé</div>
+  <div class="sidebar-tip">
+    LLE préserve les <strong>poids de reconstruction locale</strong>. Solution = petites valeurs propres de <strong>M = (I−W)ᵀ(I−W)</strong>.
+  </div>
+</aside>
+</div>
+</div>
+<footer class="footer">StatExplore · MTH1620 · École Polytechnique de Lomé · Licence IA & Big Data</footer>
+<script>
+(function(){
+  const cvs=document.getElementById('lleCanvas');
+  const ctx=cvs.getContext('2d');
+  const W=cvs.width,H=cvs.height;
+
+  // Points sur une courbe
+  const pts=[];
+  for(let i=0;i<20;i++){
+    const t=i/19;
+    pts.push([30+t*220, H/2+Math.sin(t*Math.PI*1.5)*70+Math.cos(t*3)*15]);
+  }
+
+  function dist(a,b){return Math.sqrt((a[0]-b[0])**2+(a[1]-b[1])**2);}
+
+  function draw(){
+    const k=parseInt(document.getElementById('lle-k').value);
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#080810';ctx.fillRect(0,0,W,H);
+
+    // Courbe de fond
+    ctx.strokeStyle='rgba(124,58,237,0.2)';ctx.lineWidth=2;
+    ctx.beginPath();pts.forEach(([x,y],i)=>i===0?ctx.moveTo(x,y):ctx.lineTo(x,y));ctx.stroke();
+
+    const focus=10; // point central
+    const dists=pts.map((q,j)=>({j,d:dist(pts[focus],q)})).filter(x=>x.j!==focus).sort((a,b)=>a.d-b.d);
+    const neighbors=dists.slice(0,k).map(x=>x.j);
+
+    // Poids fictifs (simplifiés)
+    const totalDist=neighbors.reduce((s,j)=>s+1/dists.find(d=>d.j===j).d,0);
+    const weights=neighbors.map(j=>{
+      const d=dists.find(dd=>dd.j===j).d;
+      return{j,w:(1/d)/totalDist};
+    });
+
+    // Autres points
+    pts.forEach(([x,y],i)=>{
+      if(i===focus)return;
+      const isNeighbor=neighbors.includes(i);
+      ctx.fillStyle=isNeighbor?'rgba(167,139,250,0.9)':'rgba(255,255,255,0.2)';
+      ctx.beginPath();ctx.arc(x,y,isNeighbor?6:4,0,Math.PI*2);ctx.fill();
+    });
+
+    // Flèches poids
+    weights.forEach(({j,w})=>{
+      const [px,py]=pts[focus];
+      const [nx,ny]=pts[j];
+      const lw=w*8;
+      ctx.strokeStyle=`rgba(167,139,250,${0.3+w*0.7})`;ctx.lineWidth=lw;
+      ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(nx,ny);ctx.stroke();
+    });
+
+    // Point central
+    ctx.fillStyle='#F59E0B';
+    ctx.beginPath();ctx.arc(pts[focus][0],pts[focus][1],8,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='rgba(245,158,11,0.5)';ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(pts[focus][0],pts[focus][1],8,0,Math.PI*2);ctx.stroke();
+
+    // Afficher poids
+    const wDiv=document.getElementById('lle-weights');
+    wDiv.innerHTML='<div style="color:var(--text-muted);font-size:0.72rem;margin-bottom:0.4rem">Poids W(i,j) :</div>'+
+      weights.map(({j,w})=>`<div>voisin ${j} : <span style="color:#A78BFA">${w.toFixed(3)}</span></div>`).join('');
+  }
+
+  document.getElementById('lle-k').addEventListener('input',()=>{
+    document.getElementById('lle-k-v').textContent=document.getElementById('lle-k').value;
+    draw();
+  });
+  draw();
+})();
+
+document.querySelectorAll('.quiz-opt').forEach(opt=>{
+  opt.addEventListener('click',()=>{
+    const item=opt.closest('.quiz-item');
+    if(item.dataset.answered)return;
+    item.dataset.answered='1';
+    const ok=opt.dataset.correct==='true';
+    opt.classList.add(ok?'correct':'wrong');
+    if(!ok)item.querySelector('[data-correct="true"]').classList.add('correct');
+    item.querySelectorAll('.quiz-opt').forEach(o=>o.disabled=true);
+    const fb=item.querySelector('.quiz-fb');
+    fb.textContent=ok?fb.dataset.ok:fb.dataset.ko;
+    fb.classList.add('show',ok?'correct':'wrong');
+  });
+});
+</script>
+<script src="../assets/js/progress.js"></script>
+</body>
+</html>

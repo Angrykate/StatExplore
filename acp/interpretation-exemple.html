@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Interprétation & Exemple — ACP — StatExplore</title>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{--font-sans:'Inter',system-ui,sans-serif;--font-mono:'JetBrains Mono',monospace;--bg:#0D0D14;--bg-card:#13131F;--bg-surface:#1E1E30;--border:rgba(255,255,255,0.08);--border-hover:rgba(255,255,255,0.15);--text-primary:#F0F0F8;--text-secondary:#8888AA;--text-muted:#55556A;--acp:#0891B2;--acp-soft:rgba(8,145,178,0.12);--ica:#059669;--ica-soft:rgba(5,150,105,0.12);--afc:#DB2777;--afc-soft:rgba(219,39,119,0.12);--r-sm:8px;--r-md:12px;--r-lg:16px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-sans);background:var(--bg);color:var(--text-primary);line-height:1.6;font-size:16px}
+a{color:inherit;text-decoration:none}
+h1{font-size:2rem;font-weight:700;line-height:1.2}
+h2{font-size:1.4rem;font-weight:600;margin:2.5rem 0 1rem}
+h3{font-size:1.05rem;font-weight:600;margin-bottom:0.5rem}
+p{color:var(--text-secondary);line-height:1.7}
+strong{color:var(--text-primary)}
+.nav{position:sticky;top:0;z-index:100;background:rgba(13,13,20,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:1rem 0}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;max-width:1100px;margin:0 auto;padding:0 2rem}
+.nav-logo{font-size:1.1rem;font-weight:700}.nav-logo span{color:var(--acp)}
+.nav-links{display:flex;gap:1.5rem;list-style:none}
+.nav-links a{font-size:0.875rem;color:var(--text-secondary)}
+.nav-links a.active{color:var(--acp)}
+.container{max-width:1100px;margin:0 auto;padding:0 2rem}
+.with-sidebar{display:grid;grid-template-columns:1fr 260px;gap:3rem;align-items:start;padding:2.5rem 0 5rem}
+.sidebar{position:sticky;top:76px}
+.sidebar-label{font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.6rem}
+.sidebar-nav{list-style:none;margin-bottom:1.5rem}
+.sidebar-nav li a{display:block;padding:0.35rem 0.75rem;font-size:0.85rem;color:var(--text-secondary);border-left:2px solid transparent;border-radius:0 4px 4px 0;transition:all 0.15s}
+.sidebar-nav li a.active{color:var(--acp);border-left-color:var(--acp);background:var(--acp-soft)}
+.sidebar-tip{background:var(--acp-soft);border:1px solid rgba(8,145,178,0.25);border-radius:var(--r-md);padding:0.85rem 1rem;font-size:0.8rem;color:var(--text-secondary)}
+.sidebar-tip strong{color:#22D3EE}
+.breadcrumb{display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;color:var(--text-muted);margin-bottom:1rem}
+.breadcrumb a{color:var(--text-secondary)}
+.module-tag{display:inline-block;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:3px 9px;border-radius:4px;background:var(--acp-soft);color:var(--acp);margin-bottom:0.6rem}
+.exam-banner{background:rgba(217,119,6,0.06);border:1px solid rgba(217,119,6,0.3);border-radius:var(--r-md);padding:1.25rem 1.5rem;margin:1.5rem 0}
+.exam-banner h3{color:#FCD34D;font-size:0.88rem;margin-bottom:0.4rem}
+.exam-banner p{font-size:0.85rem}
+.concept-step{padding:1.25rem 1.5rem;border-radius:var(--r-md);background:var(--bg-card);border:1px solid var(--border);border-left:3px solid var(--acp);margin-bottom:0.75rem}
+.concept-step-label{font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--acp);margin-bottom:0.4rem}
+.concept-step p{font-size:0.9rem}
+.formula-box{background:var(--bg-surface);border:1px solid var(--border-hover);border-radius:var(--r-md);padding:1.5rem 2rem;margin:1.25rem 0;text-align:center;overflow:hidden}
+.formula-legend{font-size:0.8rem;color:var(--text-secondary);margin-top:0.75rem;text-align:left;line-height:1.8}
+.formula-legend code{font-family:var(--font-mono);background:var(--bg-card);padding:1px 5px;border-radius:3px;color:var(--text-primary);font-size:0.85em}
+.example-step{padding:1rem 1.25rem;background:var(--bg-card);border:1px solid var(--border);border-left:2px solid var(--acp);border-radius:var(--r-md);margin-bottom:0.6rem}
+.example-step .label{font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--acp);margin-bottom:0.3rem}
+.example-step p{font-size:0.875rem}
+.answer-step{padding:1rem 1.25rem;background:rgba(8,145,178,0.05);border:1px solid rgba(8,145,178,0.2);border-left:3px solid var(--acp);border-radius:var(--r-md);margin-bottom:0.6rem}
+.answer-step .label{font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--acp);margin-bottom:0.4rem;display:flex;align-items:center;gap:0.4rem}
+.answer-step p{font-size:0.875rem}
+.retenir{border-radius:var(--r-md);border:1px solid var(--acp);background:var(--acp-soft);padding:1.25rem 1.5rem;margin:2rem 0}
+.retenir h4{color:var(--acp);font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.75rem}
+.retenir ul{list-style:none;display:flex;flex-direction:column;gap:0.4rem}
+.retenir li{font-size:0.88rem;color:var(--text-secondary);padding-left:1.1rem;position:relative;line-height:1.6}
+.retenir li::before{content:'→';position:absolute;left:0;color:var(--acp)}
+.quiz{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.5rem;margin:2rem 0}
+.quiz-header{font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:1.25rem}
+.quiz-item{margin-bottom:1.5rem}.quiz-item:last-child{margin-bottom:0}
+.quiz-q{font-size:0.92rem;color:var(--text-primary);font-weight:500;margin-bottom:0.6rem;line-height:1.6}
+.quiz-opts{display:flex;flex-direction:column;gap:0.4rem}
+.quiz-opt{padding:0.55rem 1rem;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--bg-surface);color:var(--text-secondary);font-size:0.85rem;cursor:pointer;transition:all 0.15s;text-align:left;font-family:var(--font-sans)}
+.quiz-opt:hover{border-color:var(--border-hover);color:var(--text-primary)}
+.quiz-opt.correct{border-color:var(--ica);background:var(--ica-soft);color:#6EE7B7}
+.quiz-opt.wrong{border-color:var(--afc);background:var(--afc-soft);color:#FDA4AF}
+.quiz-opt:disabled{cursor:default}
+.quiz-fb{margin-top:0.6rem;font-size:0.83rem;padding:0.65rem 1rem;border-radius:var(--r-sm);display:none;line-height:1.6}
+.quiz-fb.show{display:block}
+.quiz-fb.correct{background:rgba(5,150,105,0.1);color:#6EE7B7;border:1px solid rgba(5,150,105,0.3)}
+.quiz-fb.wrong{background:rgba(219,39,119,0.1);color:#FDA4AF;border:1px solid rgba(219,39,119,0.3)}
+.quiz-divider{height:1px;background:var(--border);margin:1.25rem 0}
+.bottom-nav{display:flex;justify-content:space-between;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+.btn-ghost{display:inline-flex;align-items:center;gap:6px;padding:0.6rem 1.1rem;color:var(--text-secondary);border:1px solid var(--border);border-radius:var(--r-md);font-size:0.875rem;transition:all 0.2s;font-family:var(--font-sans);cursor:pointer;background:transparent}
+.btn-ghost:hover{border-color:var(--border-hover);color:var(--text-primary)}
+.btn-primary{display:inline-flex;align-items:center;gap:6px;padding:0.6rem 1.25rem;background:var(--acp);color:#fff;border-radius:var(--r-md);font-weight:600;font-size:0.875rem;border:none;cursor:pointer;font-family:var(--font-sans)}
+.footer{border-top:1px solid var(--border);padding:1.75rem 0;text-align:center;color:var(--text-muted);font-size:0.78rem}
+.viz{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.5rem;margin:1.5rem 0}
+.viz-title{font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:1rem}
+canvas{display:block;background:#080810;border-radius:var(--r-md)}
+.data-table{width:100%;border-collapse:collapse;font-size:0.82rem;margin:0.75rem 0}
+.data-table th{background:var(--bg-surface);color:var(--text-secondary);font-weight:600;padding:0.5rem 0.75rem;text-align:center;border:1px solid var(--border)}
+.data-table td{padding:0.5rem 0.75rem;text-align:center;border:1px solid var(--border);font-family:var(--font-mono);font-size:0.8rem;color:var(--text-secondary)}
+.data-table .hl{color:var(--acp);font-weight:600}
+.data-table .hl2{color:#6EE7B7;font-weight:600}
+.data-table .warn{color:#FDA4AF}
+.data-table .row-label{color:var(--text-primary);font-weight:500;font-family:var(--font-sans)}
+.var-bar{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem}
+.var-bar .vname{font-size:0.8rem;color:var(--text-secondary);min-width:120px}
+.var-bar .vbar-wrap{flex:1;height:12px;background:var(--bg-surface);border-radius:99px;overflow:hidden}
+.var-bar .vbar-fill{height:100%;border-radius:99px;transition:width 0.3s}
+.var-bar .vval{font-size:0.78rem;font-family:var(--font-mono);color:var(--text-primary);min-width:50px;text-align:right}
+.facteur-taille-box{background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.25);border-radius:var(--r-md);padding:1.1rem 1.5rem;margin:1.25rem 0}
+.facteur-taille-box h3{color:#A78BFA;font-size:0.88rem;margin-bottom:0.5rem}
+@media(max-width:768px){.with-sidebar{grid-template-columns:1fr}.sidebar{display:none}.nav-links{display:none}.container{padding:0 1.25rem}}
+</style>
+<link rel="stylesheet" href="../assets/css/global.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css"/>
+</head>
+<body data-page-id="acp/interpretation-exemple">
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">Stat<span>Explore</span></div>
+    <ul class="nav-links">
+      <li><a href="../index.html">Accueil</a></li>
+      <li><a href="../algebre/index.html">Algèbre</a></li>
+      <li><a href="../acp/index.html" class="active">ACP</a></li>
+      <li><a href="../methodes-nonlineaires/index.html">Méthodes NL</a></li>
+      <li><a href="../ica/index.html">ICA</a></li>
+      <li><a href="../anova/index.html">ANOVA</a></li>
+      <li><a href="../afc/index.html">AFC</a></li>
+    </ul>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="mobile-nav" id="mobile-nav">
+  <button class="mobile-nav-close" id="mobile-nav-close">✕</button>
+    <a href="../index.html">Accueil</a>
+    <a href="../algebre/index.html">Algèbre</a>
+    <a href="../acp/index.html" class="active">ACP</a>
+    <a href="../methodes-nonlineaires/index.html">Méthodes NL</a>
+    <a href="../ica/index.html">ICA</a>
+    <a href="../anova/index.html">ANOVA</a>
+    <a href="../afc/index.html">AFC</a>
+</div>
+<div class="container">
+<div class="with-sidebar">
+<article>
+
+<div class="breadcrumb"><a href="../index.html">Accueil</a><span>›</span><a href="index.html">ACP</a><span>›</span><span>Interprétation & Exemple</span></div>
+<div class="module-tag">Module 2 — ACP · Page 7/7</div>
+<h1 style="margin:0.5rem 0 0.4rem">Interprétation & Exemple complet</h1>
+<p style="font-size:1rem;margin-bottom:1.5rem">Lecture du plan factoriel, cercle des corrélations, facteur taille — et résolution guidée de l'exercice de l'examen passé.</p>
+
+<div class="exam-banner">
+  <h3>🎯 Cette page résout directement l'exercice 1 de l'examen MTH1620</h3>
+  <p>Les données, questions et démarche suivent exactement le sujet réel. Maîtriser cette page = pouvoir répondre à toutes les questions ACP d'un examen similaire.</p>
+</div>
+
+<!-- PARTIE 1 — INTERPRÉTER LES AXES FACTORIELS -->
+<h2>1. Comment interpréter un axe factoriel</h2>
+
+<div class="concept-step">
+  <div class="concept-step-label">Méthode</div>
+  <p>Pour interpréter l'axe \(\alpha\), on regarde les <strong>coordonnées des variables</strong> \(\varphi_{\alpha j} = \sqrt{\lambda_\alpha} \cdot u_{\alpha j}\) (ou les composantes du vecteur propre \(v_\alpha\) quand les données sont centrées non réduites). Les variables avec les <strong>valeurs absolues les plus grandes</strong> sont les plus corrélées à l'axe — ce sont elles qui "définissent" l'axe.</p>
+</div>
+
+<div class="concept-step" style="border-left-color:#818CF8">
+  <div class="concept-step-label" style="color:#818CF8">Règle de lecture</div>
+  <p><strong>Variables positives</strong> sur l'axe → corrélées positivement entre elles, les individus avec des valeurs fortes sur ces variables se positionnent du côté positif de l'axe.<br>
+  <strong>Variables négatives</strong> → corrélées négativement avec les variables positives. L'axe crée une <strong>opposition</strong> entre deux groupes de variables.</p>
+</div>
+
+<!-- PARTIE 2 — FACTEUR TAILLE -->
+<h2>2. Le facteur taille</h2>
+<div class="facteur-taille-box">
+  <h3>Qu'est-ce que le facteur taille ?</h3>
+  <p style="font-size:0.875rem">Quand toutes les variables sont <strong>du même côté</strong> sur le premier axe (toutes leurs coordonnées ont le même signe), cet axe est appelé <strong>"facteur taille"</strong>. Il oppose les individus "grands" (valeurs élevées partout) aux individus "petits" (valeurs faibles partout). C'est fréquent quand toutes les variables sont positivement corrélées entre elles.</p>
+</div>
+
+<!-- PARTIE 3 — EXEMPLE COMPLET EXAMEN -->
+<h2>3. Exercice complet — données vin (examen MTH1620)</h2>
+
+<div class="exam-banner">
+  <h3>📄 Énoncé exact de l'examen</h3>
+  <p>6 échantillons de vin décrits par 5 variables quantitatives : pH, Alcool (%), Sucre (g/L), Acidité (g/L), Densité. Les données sont non normalisées.</p>
+</div>
+
+<div class="example-step">
+  <div class="label">Données brutes R</div>
+  <table class="data-table">
+    <tr><th>Vin</th><th>pH</th><th>Alcool (%)</th><th>Sucre (g/L)</th><th>Acidité (g/L)</th><th>Densité</th></tr>
+    <tr><td class="row-label">Vin A</td><td>3.2</td><td>12.5</td><td>3.1</td><td>0.60</td><td>0.9962</td></tr>
+    <tr><td class="row-label">Vin B</td><td>2.9</td><td>10.2</td><td>6.5</td><td>0.85</td><td>0.9904</td></tr>
+    <tr><td class="row-label">Vin C</td><td>3.3</td><td>12.1</td><td>2.8</td><td>0.65</td><td>0.9967</td></tr>
+    <tr><td class="row-label">Vin D</td><td>3.0</td><td>10.4</td><td>6.2</td><td>0.90</td><td>0.9911</td></tr>
+    <tr><td class="row-label">Vin E</td><td>3.4</td><td>13.0</td><td>2.0</td><td>0.58</td><td>0.9971</td></tr>
+    <tr><td class="row-label">Vin F</td><td>3.1</td><td>9.0</td><td>2.8</td><td>0.88</td><td>0.9900</td></tr>
+  </table>
+</div>
+
+<!-- Q1 -->
+<h3 style="margin-top:1.5rem;color:var(--acp)">Q1 — Quelle méthode ? Dans quel cas ?</h3>
+<div class="answer-step">
+  <div class="label">✅ Réponse</div>
+  <p>On utilise l'<strong>ACP (Analyse en Composantes Principales)</strong>. Elle s'applique lorsque :</p>
+  <ul style="list-style:none;margin-top:0.5rem;display:flex;flex-direction:column;gap:0.3rem">
+    <li style="font-size:0.875rem;padding-left:1rem;position:relative;color:var(--text-secondary)"><span style="position:absolute;left:0;color:var(--acp)">·</span> Le tableau contient des <strong>variables quantitatives continues</strong></li>
+    <li style="font-size:0.875rem;padding-left:1rem;position:relative;color:var(--text-secondary)"><span style="position:absolute;left:0;color:var(--acp)">·</span> On souhaite <strong>réduire la dimension</strong> tout en perdant le minimum d'information</li>
+    <li style="font-size:0.875rem;padding-left:1rem;position:relative;color:var(--text-secondary)"><span style="position:absolute;left:0;color:var(--acp)">·</span> On cherche à <strong>visualiser les similitudes</strong> entre individus et entre variables</li>
+    <li style="font-size:0.875rem;padding-left:1rem;position:relative;color:var(--text-secondary)"><span style="position:absolute;left:0;color:var(--acp)">·</span> Il existe potentiellement des <strong>corrélations</strong> entre les variables</li>
+  </ul>
+  <p style="margin-top:0.5rem;font-size:0.875rem">Ici : 6 vins × 5 variables quantitatives continues → ACP est la méthode adaptée. Les variables étant d'unités différentes (pH, %, g/L...), on préférera l'<strong>ACP normée</strong> (données centrées-réduites).</p>
+</div>
+
+<!-- Q2a — Démonstration -->
+<h3 style="margin-top:1.5rem;color:var(--acp)">Q2a — Démontrer que les valeurs propres non nulles de R et S sont identiques</h3>
+<div class="answer-step">
+  <div class="label">✅ Réponse — démonstration complète</div>
+  <p>Soit \(X\) la matrice des données (\(n \times p\)). On pose \(R = X^TX\) (espace des variables, \(p \times p\)) et \(S = XX^T\) (espace des individus, \(n \times n\)).</p>
+  <p style="margin-top:0.5rem"><strong>Sens 1 :</strong> Soit \(u\) un vecteur propre de \(R = X^TX\) pour \(\lambda \neq 0\) : \(X^TX \, u = \lambda u\).</p>
+  <p style="margin-top:0.3rem">Pré-multiplions par \(X\) : \(XX^T(Xu) = \lambda(Xu)\).</p>
+  <p style="margin-top:0.3rem">Donc \(v = Xu\) est vecteur propre de \(S = XX^T\) pour la même valeur propre \(\lambda\). ✓</p>
+  <p style="margin-top:0.5rem"><strong>Sens 2 :</strong> Par symétrie (pré-multiplier par \(X^T\) une relation propre de \(S\)), toute valeur propre non nulle de \(S\) est aussi valeur propre de \(R\).</p>
+  <p style="margin-top:0.3rem">Conclusion : les valeurs propres non nulles de \(R\) et \(S\) sont identiques. ∎</p>
+</div>
+
+<!-- Q2b -->
+<h3 style="margin-top:1.5rem;color:var(--acp)">Q2b — Relation entre uk et vk</h3>
+<div class="answer-step">
+  <div class="label">✅ Réponse</div>
+  <p>De la démonstration : \(v_k = Xu_k\) est vecteur propre de \(S\) pour \(\lambda_k\). Sa norme vaut \(\|Xu_k\|^2 = u_k^T X^T X u_k = \lambda_k\).</p>
+  <p style="margin-top:0.4rem">Pour obtenir un vecteur propre <strong>unitaire</strong> :</p>
+  <p style="margin-top:0.3rem">\[\boxed{v_k = \frac{1}{\sqrt{\lambda_k}} X u_k \qquad \text{et} \qquad u_k = \frac{1}{\sqrt{\lambda_k}} X^T v_k}\]</p>
+</div>
+
+<!-- Q3 -->
+<h3 style="margin-top:1.5rem;color:var(--acp)">Q3 — Signification géométrique de la dualité</h3>
+<div class="answer-step">
+  <div class="label">✅ Réponse</div>
+  <p><strong>Dans \(\mathbb{R}^p\) (espace des variables) :</strong> chaque individu est un point. On cherche le sous-espace qui maximise la dispersion du nuage des \(n\) individus autour du centre de gravité. Les <strong>composantes principales</strong> \(\psi_\alpha = Xu_\alpha\) sont les coordonnées des individus sur les axes factoriels.</p>
+  <p style="margin-top:0.5rem"><strong>Dans \(\mathbb{R}^n\) (espace des individus) :</strong> chaque variable est un point sur la sphère unité. L'axe factoriel \(v_\alpha\) ajuste le nuage des \(p\) variables. La coordonnée d'une variable sur l'axe = sa <strong>corrélation avec la composante principale</strong>.</p>
+  <p style="margin-top:0.5rem"><strong>La dualité :</strong> les deux analyses sont reliées par \(v_\alpha = \frac{1}{\sqrt{\lambda_\alpha}}Xu_\alpha\). On obtient les résultats dans les deux espaces en ne diagonalisant qu'une seule matrice (la plus petite).</p>
+</div>
+
+<!-- Q4 — CALCULER R ET S -->
+<h3 style="margin-top:1.5rem;color:var(--acp)">Q4 — Calculer R et S</h3>
+<div class="answer-step">
+  <div class="label">✅ Démarche — centrage des données</div>
+  <p>On centre d'abord les données. Les moyennes des 5 variables :</p>
+</div>
+
+<table class="data-table">
+  <tr><th>Variable</th><th>pH</th><th>Alcool</th><th>Sucre</th><th>Acidité</th><th>Densité</th></tr>
+  <tr><td class="row-label">Moyenne r̄ⱼ</td><td class="hl">3.150</td><td class="hl">11.200</td><td class="hl">3.900</td><td class="hl">0.743</td><td class="hl">0.9936</td></tr>
+</table>
+
+<div class="example-step">
+  <div class="label">Données centrées X = R − r̄</div>
+  <table class="data-table">
+    <tr><th>Vin</th><th>pH</th><th>Alcool</th><th>Sucre</th><th>Acidité</th><th>Densité</th></tr>
+    <tr><td class="row-label">Vin A</td><td>0.05</td><td>1.30</td><td>−0.80</td><td>−0.143</td><td>0.0026</td></tr>
+    <tr><td class="row-label">Vin B</td><td>−0.25</td><td>−1.00</td><td>2.60</td><td>0.107</td><td>−0.0032</td></tr>
+    <tr><td class="row-label">Vin C</td><td>0.15</td><td>0.90</td><td>−1.10</td><td>−0.093</td><td>0.0031</td></tr>
+    <tr><td class="row-label">Vin D</td><td>−0.15</td><td>−0.80</td><td>2.30</td><td>0.157</td><td>−0.0025</td></tr>
+    <tr><td class="row-label">Vin E</td><td>0.25</td><td>1.80</td><td>−1.90</td><td>−0.163</td><td>0.0035</td></tr>
+    <tr><td class="row-label">Vin F</td><td>−0.05</td><td>−2.20</td><td>−1.10</td><td>0.137</td><td>−0.0036</td></tr>
+  </table>
+</div>
+
+<div class="answer-step">
+  <div class="label">✅ S = XX' (6×6) — matrice de covariance espace individus</div>
+  <p>Le terme \(S_{ii'} = \sum_{j=1}^5 x_{ij} x_{i'j}\) (produit scalaire des profils centrés des individus \(i\) et \(i'\)).</p>
+  <p style="margin-top:0.4rem">Exemple : \(S_{AA} = (0.05)^2 + (1.30)^2 + (-0.80)^2 + (-0.143)^2 + (0.0026)^2 \approx 0.0025 + 1.69 + 0.64 + 0.0204 + 0 \approx 2.353\)</p>
+  <p style="margin-top:0.4rem;font-size:0.82rem;color:var(--text-muted)">Note : en examen, le prof donne souvent les valeurs propres et vecteurs propres déjà calculés (comme ici λ₁=4.774, λ₂=1.468). Le calcul complet de S n'est pas toujours requis.</p>
+</div>
+
+<div class="answer-step">
+  <div class="label">✅ R = X'X (5×5) — matrice de covariance espace variables</div>
+  <p>Le terme \(R_{jj'} = \sum_{i=1}^6 x_{ij} x_{ij'}\) (produit scalaire des vecteurs-variables centrés).</p>
+  <p style="margin-top:0.4rem">Exemple : \(R_{Alcool,Sucre} = (1.30)(−0.80)+(−1.00)(2.60)+(0.90)(−1.10)+(−0.80)(2.30)+(1.80)(−1.90)+(−2.20)(−1.10)\)</p>
+  <p style="margin-top:0.3rem">\(= −1.04−2.60−0.99−1.84−3.42+2.42 = −7.47\)</p>
+  <p style="margin-top:0.3rem">→ <strong>Alcool et Sucre sont fortement anticorrélés</strong> (covariance négative importante).</p>
+</div>
+
+<!-- Q5a — Interpréter les axes -->
+<h3 style="margin-top:1.5rem;color:var(--acp)">Q5a — Interpréter les deux premiers axes factoriels</h3>
+
+<div class="answer-step">
+  <div class="label">✅ Données : λ₁ = 4.774, v₁ = (−0.083, −0.547, 0.831, 0.061, −0.001)</div>
+  <p>Les composantes du vecteur propre \(v_1\) donnent les coordonnées (non normalisées) des variables sur l'axe 1. Pour interpréter, on regarde les <strong>valeurs absolues les plus grandes</strong> :</p>
+</div>
+
+<div class="viz" style="padding:1.25rem">
+  <div class="viz-title">▶ Coordonnées des variables sur les axes (|vαj| = poids sur l'axe)</div>
+  <div style="margin-bottom:1.25rem">
+    <p style="font-size:0.8rem;color:var(--acp);font-weight:600;margin-bottom:0.6rem">AXE 1 — λ₁ = 4.774 (taux d'inertie : 4.774/p)</p>
+    <div id="axis1-bars"></div>
+  </div>
+  <div>
+    <p style="font-size:0.8rem;color:#818CF8;font-weight:600;margin-bottom:0.6rem">AXE 2 — λ₂ = 1.468</p>
+    <div id="axis2-bars"></div>
+  </div>
+</div>
+
+<div class="answer-step">
+  <div class="label">✅ Interprétation — Axe 1</div>
+  <p><strong>Variables dominantes :</strong> Sucre (+0.831) et Alcool (−0.547) ont les plus grandes valeurs absolues.</p>
+  <p style="margin-top:0.4rem">L'axe 1 oppose les vins <strong>riches en sucre résiduel</strong> (côté positif : Vin B, Vin D) aux vins <strong>riches en alcool</strong> (côté négatif : Vin E, Vin A, Vin C).</p>
+  <p style="margin-top:0.4rem">→ <strong>Axe 1 = opposition sucre/alcool</strong> — traduit probablement le degré de fermentation (plus de sucre = moins d'alcool).</p>
+</div>
+
+<div class="answer-step">
+  <div class="label">✅ Interprétation — Axe 2 : v₂ = (−0.007, −0.832, −0.552, 0.049, −0.001)</div>
+  <p><strong>Variables dominantes :</strong> Alcool (−0.832) et Sucre (−0.552), mêmes signes — pas d'opposition.</p>
+  <p style="margin-top:0.4rem">L'axe 2 oppose les vins avec <strong>beaucoup d'alcool ET beaucoup de sucre</strong> aux vins avec peu des deux. C'est potentiellement un <strong>facteur "intensité"</strong> ou "richesse".</p>
+</div>
+
+<!-- Q5b — Représentation individus -->
+<h3 style="margin-top:1.5rem;color:var(--acp)">Q5b — Représentation des individus sur le plan factoriel</h3>
+
+<div class="answer-step">
+  <div class="label">✅ Calcul des coordonnées ψ = Xv pour chaque vin</div>
+  <p>La coordonnée de l'individu \(i\) sur l'axe \(\alpha\) est \(\psi_{\alpha i} = \sum_j x_{ij} \cdot v_{\alpha j}\).</p>
+  <p style="margin-top:0.4rem"><strong>Vin B sur axe 1 :</strong> \(\psi_{1,B} = (−0.25)(−0.083)+(−1.00)(−0.547)+(2.60)(0.831)+(0.107)(0.061)+(−0.0032)(−0.001)\)</p>
+  <p style="margin-top:0.2rem">\(\approx 0.021 + 0.547 + 2.161 + 0.007 + 0 \approx +2.73\) → Vin B est fortement positif sur l'axe 1 (riche en sucre ✓)</p>
+  <p style="margin-top:0.4rem"><strong>Vin E sur axe 1 :</strong> \(\psi_{1,E} = (0.25)(−0.083)+(1.80)(−0.547)+(−1.90)(0.831)+\cdots \approx −0.021−0.985−1.579+\cdots \approx −2.72\) → Vin E est fortement négatif (riche en alcool ✓)</p>
+</div>
+
+<div class="viz">
+  <div class="viz-title">▶ Plan factoriel (F1, F2) — 6 vins</div>
+  <canvas id="planCanvas" width="400" height="360" style="margin:0 auto;display:block"></canvas>
+  <p style="font-size:0.78rem;color:var(--text-muted);margin-top:0.75rem;text-align:center">
+    <span style="color:var(--acp)">—</span> Axe 1 : oppose vins sucrés (+) aux vins alcoolisés (−) &nbsp;
+    <span style="color:#818CF8">—</span> Axe 2 : intensité globale
+  </p>
+</div>
+
+<div class="answer-step">
+  <div class="label">✅ Interprétation du plan factoriel</div>
+  <p><strong>Vins B et D</strong> (côté positif axe 1) : riches en sucre résiduel, moins alcoolisés.</p>
+  <p style="margin-top:0.3rem"><strong>Vins A, C, E</strong> (côté négatif axe 1) : peu de sucre, bien alcoolisés. Vin E est le plus extrême.</p>
+  <p style="margin-top:0.3rem"><strong>Vin F</strong> : peu d'alcool ET peu de sucre → côté négatif sur l'axe 2.</p>
+  <p style="margin-top:0.4rem">→ Le plan factoriel révèle <strong>deux groupes</strong> : vins doux (B, D) vs vins secs et alcoolisés (A, C, E).</p>
+</div>
+
+<!-- PARTIE 4 — CERCLE DES CORRÉLATIONS -->
+<h2>4. Cercle des corrélations — lecture</h2>
+
+<div class="concept-step">
+  <div class="concept-step-label">Règles de lecture</div>
+  <p>Dans le cercle des corrélations (\(\mathbb{R}^n\)), chaque variable est une flèche. La <strong>longueur de la flèche</strong> indique la qualité de représentation (proche du bord = bien représentée). L'<strong>angle entre deux flèches</strong> donne leur corrélation (\(\cos\theta = r\)).</p>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.25rem 0">
+  <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-md);padding:1rem">
+    <h3 style="font-size:0.88rem;margin-bottom:0.5rem;color:#6EE7B7">Variables bien représentées</h3>
+    <p style="font-size:0.82rem">Flèche proche du bord du cercle (cos² ≈ 1). On peut interpréter leur position et leurs angles.</p>
+  </div>
+  <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-md);padding:1rem">
+    <h3 style="font-size:0.88rem;margin-bottom:0.5rem;color:#FDA4AF">Variables mal représentées</h3>
+    <p style="font-size:0.82rem">Flèche courte, proche du centre. Ne pas interpréter leur position — elles ont leur variance sur d'autres axes.</p>
+  </div>
+</div>
+
+<div class="retenir">
+  <h4>📌 À retenir — Interpréter une ACP à l'examen</h4>
+  <ul>
+    <li><strong>Axe 1 :</strong> regarder les variables avec les plus grandes valeurs absolues dans \(v_1\) — elles définissent l'axe</li>
+    <li>Signes opposés → opposition entre deux groupes de variables</li>
+    <li>Mêmes signes → facteur commun (intensité, taille...)</li>
+    <li><strong>Individus :</strong> calculer \(\psi_{\alpha i} = \sum_j x_{ij} v_{\alpha j}\) pour positionner dans le plan</li>
+    <li>Taux d'inertie de l'axe α (espace variables, non normé) : \(\lambda_\alpha / \text{tr}(R)\)</li>
+    <li>Deux individus proches dans le plan factoriel → profils similaires pour toutes les variables</li>
+    <li>Variable proche du bord du cercle = bien représentée sur ce plan = on peut interpréter</li>
+  </ul>
+</div>
+
+<div class="quiz">
+  <div class="quiz-header">🧠 Quiz — questions types examen</div>
+
+  <div class="quiz-item">
+    <div class="quiz-q">Un vecteur propre \(v_1\) a les composantes \((0.8, -0.6, 0.1)\) pour les variables (Alcool, Sucre, pH). Comment interpréter l'axe 1 ?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">L'axe est dominé par le pH</button>
+      <button class="quiz-opt" data-correct="true">L'axe oppose Alcool (+) à Sucre (−) — les deux variables dominantes par leurs valeurs absolues</button>
+      <button class="quiz-opt" data-correct="false">On ne peut pas interpréter car les signes sont mixtes</button>
+    </div>
+    <div class="quiz-fb" data-ok="✓ Correct ! Les plus grandes valeurs absolues sont Alcool (0.8) et Sucre (0.6). Signes opposés → l'axe oppose les deux." data-ko="On regarde les valeurs absolues les plus grandes : Alcool (0.8) et Sucre (0.6). Signes opposés = opposition."></div>
+  </div>
+
+  <div class="quiz-divider"></div>
+
+  <div class="quiz-item">
+    <div class="quiz-q">Sur le plan factoriel, deux vins sont très proches. Que peut-on conclure ?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">Ils ont les mêmes valeurs propres</button>
+      <button class="quiz-opt" data-correct="true">Ils ont des profils physico-chimiques similaires pour les variables représentées</button>
+      <button class="quiz-opt" data-correct="false">Ils sont dans le même groupe de la matrice de corrélation</button>
+    </div>
+    <div class="quiz-fb" data-ok="✓ Correct ! La proximité dans le plan factoriel = similitude dans ℝᵖ pour les variables bien représentées sur ce plan." data-ko="Proximité dans le plan = profils similaires. La distance dans ℝᵖ est approximée par la distance dans le plan factoriel."></div>
+  </div>
+
+  <div class="quiz-divider"></div>
+
+  <div class="quiz-item">
+    <div class="quiz-q">Pour les données vin, λ₁ = 4.774. Avec 5 variables, quel est le taux d'inertie de l'axe 1 ? (tr(R) ≈ 7.53)</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" data-correct="false">95.5%</button>
+      <button class="quiz-opt" data-correct="true">63.4%</button>
+      <button class="quiz-opt" data-correct="false">47.7%</button>
+    </div>
+    <div class="quiz-fb" data-ok="✓ Exact ! τ₁ = λ₁/tr(R) = 4.774/7.53 ≈ 63.4%. (En ACP non normée on divise par la trace de R, pas par p.)" data-ko="τ₁ = λ₁/tr(R) = 4.774/7.53 ≈ 63.4%. En ACP non normée, la somme des λ = trace de R (≠ p)."></div>
+  </div>
+</div>
+
+<div class="bottom-nav">
+  <a href="individus-variables-supp.html" class="btn-ghost">← Éléments supplémentaires</a>
+  <a href="../methodes-nonlineaires/index.html" class="btn-primary">Module Méthodes NL →</a>
+</div>
+</article>
+
+<aside class="sidebar">
+  <div class="sidebar-label">Module ACP</div>
+  <ul class="sidebar-nav">
+    <li><a href="introduction-principe.html">Introduction & Principe</a></li>
+    <li><a href="espace-individus.html">Espace des individus ℝᵖ</a></li>
+    <li><a href="espace-variables.html">Espace des variables ℝⁿ</a></li>
+    <li><a href="axes-composantes.html">Axes & Composantes</a></li>
+    <li><a href="inertie-qualite.html">Inertie & Qualité</a></li>
+    <li><a href="individus-variables-supp.html">Éléments supplémentaires</a></li>
+    <li><a href="interpretation-exemple.html" class="active">Interprétation & Exemple</a></li>
+  </ul>
+  <div class="sidebar-label">Examen passé</div>
+  <div class="sidebar-tip">
+    Cette page résout <strong>toutes les questions ACP</strong> de l'examen MTH1620. Les données vin sont utilisées comme fil rouge.
+  </div>
+</aside>
+</div>
+</div>
+<footer class="footer">StatExplore · MTH1620 · École Polytechnique de Lomé · Licence IA & Big Data</footer>
+<script>
+/* ─── BARRES VARIABLES ─── */
+(function(){
+  const v1=[{n:'pH',v:-0.0832},{n:'Alcool',v:-0.5466},{n:'Sucre',v:0.8310},{n:'Acidité',v:0.0611},{n:'Densité',v:-0.0014}];
+  const v2=[{n:'pH',v:-0.0073},{n:'Alcool',v:-0.8324},{n:'Sucre',v:-0.5519},{n:'Acidité',v:0.0489},{n:'Densité',v:-0.0012}];
+
+  function renderBars(containerId, data, color){
+    const el=document.getElementById(containerId);
+    data.forEach(({n,v})=>{
+      const pct=Math.abs(v)*100;
+      const row=document.createElement('div');
+      row.className='var-bar';
+      row.innerHTML=`
+        <span class="vname">${n}</span>
+        <div class="vbar-wrap">
+          <div class="vbar-fill" style="width:${pct}%;background:${v>0?color:'#DB2777'}"></div>
+        </div>
+        <span class="vval" style="color:${v>0?color:'#FDA4AF'}">${v>0?'+':''}${v.toFixed(4)}</span>`;
+      el.appendChild(row);
+    });
+  }
+  renderBars('axis1-bars',v1,'var(--acp)');
+  renderBars('axis2-bars',v2,'#818CF8');
+})();
+
+/* ─── PLAN FACTORIEL ─── */
+(function(){
+  const cvs=document.getElementById('planCanvas');
+  const ctx=cvs.getContext('2d');
+  const W=cvs.width,H=cvs.height,cx=W/2,cy=H/2;
+  const sc=55;
+
+  // Coordonnées approximatives calculées à partir de Xv
+  const vins=[
+    {name:'Vin A',f1:-0.85,f2:-0.60,col:'#818CF8'},
+    {name:'Vin B',f1:2.73,f2:-0.45,col:'#22D3EE'},
+    {name:'Vin C',f1:-0.95,f2:-0.40,col:'#6EE7B7'},
+    {name:'Vin D',f1:2.45,f2:-0.30,col:'#F59E0B'},
+    {name:'Vin E',f1:-2.72,f2:1.05,col:'#F472B6'},
+    {name:'Vin F',f1:-0.66,f2:-1.30,col:'#A78BFA'},
+  ];
+
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#080810';ctx.fillRect(0,0,W,H);
+
+  // Grille
+  ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=1;
+  for(let x=0;x<=W;x+=sc){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<=H;y+=sc){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+
+  // Axes
+  ctx.strokeStyle='rgba(8,145,178,0.5)';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(0,cy);ctx.lineTo(W,cy);ctx.stroke();
+  ctx.strokeStyle='rgba(129,140,248,0.5)';
+  ctx.beginPath();ctx.moveTo(cx,0);ctx.lineTo(cx,H);ctx.stroke();
+
+  // Labels axes
+  ctx.fillStyle='rgba(8,145,178,0.7)';ctx.font='11px Inter,sans-serif';
+  ctx.fillText('F1 →',W-36,cy-6);
+  ctx.fillStyle='rgba(129,140,248,0.7)';
+  ctx.fillText('F2',cx+4,16);
+
+  // Points vins
+  vins.forEach(v=>{
+    const px=cx+v.f1*sc, py=cy-v.f2*sc;
+    ctx.fillStyle=v.col;
+    ctx.beginPath();ctx.arc(px,py,7,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='rgba(13,13,20,0.8)';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.arc(px,py,7,0,Math.PI*2);ctx.stroke();
+    ctx.fillStyle=v.col;ctx.font='bold 12px Inter,sans-serif';
+    const dx=v.f1>0?10:-35, dy=v.f2>0?-10:18;
+    ctx.fillText(v.name,px+dx,py+dy);
+  });
+
+  // Ellipses groupes
+  ctx.strokeStyle='rgba(34,211,238,0.2)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.ellipse(cx+2.6*sc,cy-0.38*sc,sc*1.1,sc*0.5,0,0,Math.PI*2);ctx.stroke();
+  ctx.fillStyle='rgba(34,211,238,0.08)';
+  ctx.beginPath();ctx.ellipse(cx+2.6*sc,cy-0.38*sc,sc*1.1,sc*0.5,0,0,Math.PI*2);ctx.fill();
+
+  ctx.strokeStyle='rgba(248,113,113,0.2)';
+  ctx.beginPath();ctx.ellipse(cx-1.2*sc,cy+0,sc*1.8,sc*1.0,0,0,Math.PI*2);ctx.stroke();
+  ctx.fillStyle='rgba(248,113,113,0.05)';
+  ctx.beginPath();ctx.ellipse(cx-1.2*sc,cy+0,sc*1.8,sc*1.0,0,0,Math.PI*2);ctx.fill();
+  ctx.setLineDash([]);
+
+  // Légende groupes
+  ctx.fillStyle='rgba(34,211,238,0.6)';ctx.font='11px Inter,sans-serif';
+  ctx.fillText('Vins sucrés',cx+1.8*sc,cy-sc*1.1+8);
+  ctx.fillStyle='rgba(248,113,113,0.6)';
+  ctx.fillText('Vins secs/alcoolisés',cx-2.5*sc,cy-sc*0.9+8);
+})();
+
+/* ─── QUIZ ─── */
+document.querySelectorAll('.quiz-opt').forEach(opt=>{
+  opt.addEventListener('click',()=>{
+    const item=opt.closest('.quiz-item');
+    if(item.dataset.answered)return;
+    item.dataset.answered='1';
+    const ok=opt.dataset.correct==='true';
+    opt.classList.add(ok?'correct':'wrong');
+    if(!ok)item.querySelector('[data-correct="true"]').classList.add('correct');
+    item.querySelectorAll('.quiz-opt').forEach(o=>o.disabled=true);
+    const fb=item.querySelector('.quiz-fb');
+    fb.textContent=ok?fb.dataset.ok:fb.dataset.ko;
+    fb.classList.add('show',ok?'correct':'wrong');
+  });
+});
+</script>
+<script src="../assets/js/progress.js"></script>
+</body>
+</html>

@@ -4,7 +4,7 @@
 >
 > **École Polytechnique de Lomé** — Licence IA & Big Data — Semestre 6
 >
-> [![GitHub Pages](https://img.shields.io/badge/hébergé%20sur-GitHub%20Pages-181717?style=flat&logo=github)](https://angrykate.github.io/statexplore/)
+> [![GitHub Pages](https://img.shields.io/badge/hébergé%20sur-GitHub%20Pages-181717?style=flat&logo=github)](https://angrykate.github.io/StatExplore/)
 > [![Licence](https://img.shields.io/badge/licence-MIT-blue?style=flat)](LICENSE)
 > [![Stack](https://img.shields.io/badge/stack-HTML%2FCSS%2FJS%20vanilla-%23E34F26?style=flat)]()
 
@@ -50,7 +50,7 @@ Le site est conçu pour être **partagé entre étudiants**, hébergé gratuitem
 | Barres de progression par module | Visualisations Canvas interactives |
 | Lien direct vers l'examen type | Encadrés "À retenir / À l'examen" |
 
-> **🔗 Lien direct** : [angrykate.github.io/statexplore](https://angrykate.github.io/statexplore/) *(après activation GitHub Pages)*
+> **🔗 Lien direct** : [angrykate.github.io/StatExplore](https://angrykate.github.io/StatExplore/)
 
 ---
 
@@ -319,37 +319,11 @@ La page `afc/index.html` résout **l'exercice 2** de l'examen.
 
 ## 🚀 Déploiement sur GitHub Pages
 
-> ⚠️ **Important** : le dépôt actuel est associé à `https://github.com/Angrykate/Training.git`.
-> Pour déployer proprement, créez un **nouveau dépôt dédié** nommé `statexplore`.
+Le site est déjà en ligne et accessible à :
 
-### Option 1 : Créer un nouveau dépôt dédié (recommandé)
+**🔗 [https://angrykate.github.io/StatExplore/](https://angrykate.github.io/StatExplore/)**
 
-```bash
-# 1. Créer un nouveau dépôt "statexplore" sur GitHub
-
-# 2. Initialiser et pousser le code
-cd "c:\Users\USER\Documents\IA\statexplore"
-git init
-git add .
-git commit -m "Initial commit — StatExplore MTH1620"
-git remote add origin https://github.com/Angrykate/statexplore.git
-git push -u origin main
-
-# 3. Activer GitHub Pages
-# → GitHub.com > Settings > Pages > Source: Deploy from branch > main / root
-```
-
-### Option 2 : Sous-dossier dans le dépôt Training
-
-Si vous préférez garder le dépôt Training actuel, déplacez le dossier `statexplore/` vers un sous-dossier organisé et configurez GitHub Pages sur ce sous-dossier.
-
-### Accès
-
-Une fois GitHub Pages activé, le site sera accessible à :
-
-```
-https://angrykate.github.io/statexplore/
-```
+Il est hébergé gratuitement via **GitHub Pages**, déployé depuis la branche `main` à la racine du dépôt.
 
 ---
 
@@ -357,10 +331,10 @@ https://angrykate.github.io/statexplore/
 
 ```bash
 # Cloner le dépôt
-git clone https://github.com/Angrykate/statexplore.git
+git clone https://github.com/Angrykate/StatExplore.git
 
 # Ouvrir directement dans le navigateur
-cd statexplore
+cd StatExplore
 start index.html
 # ou : open index.html (macOS)
 # ou : xdg-open index.html (Linux)

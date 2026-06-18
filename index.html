@@ -403,8 +403,26 @@
   </div>
 </main>
 
+<!-- STAR BANNER -->
+<div style="border-top: 1px solid var(--border); padding: 2rem 0;">
+  <div class="container" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+    <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">
+      Ce site t'a été utile ? Laisse une ⭐ sur GitHub
+    </p>
+    <a href="https://github.com/Angrykate/StatExplore" target="_blank"
+       style="display: inline-flex; align-items: center; gap: 6px; padding: 0.5rem 1rem;
+              border: 1px solid var(--border); border-radius: var(--radius-md);
+              color: var(--text-secondary); font-size: 0.85rem; font-weight: 500;
+              transition: all 0.2s; white-space: nowrap;"
+       onmouseover="this.style.borderColor='var(--border-hover)'; this.style.color='var(--text-primary)'"
+       onmouseout="this.style.borderColor='var(--border)'; this.style.color='var(--text-secondary)'">
+      <i class="ti ti-star"></i> Laisser une étoile
+    </a>
+  </div>
+</div>
+
 <footer class="footer">
-  <p>StatExplore · MTH1620 · École Polytechnique de Lomé · Licence IA & Big Data</p>
+  <p>StatExplore · MTH1620 · École Polytechnique de Lomé · Licence IA & Big Data · <span style="color: var(--text-primary); font-size: 1.05em; font-weight: 500;">Illane</span></p>
 </footer>
 
 <script src="assets/js/progress.js"></script>
